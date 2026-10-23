@@ -53,7 +53,7 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 1,
     name: 'Màn 1: Khởi Động Tính Nhẩm',
-    subtitle: '1 Vòng quỹ đạo · Phép tính < 20 · 1 chạm cơ bản',
+    subtitle: '1 Vòng quỹ đạo · Phép tính < 20 · Phản xạ nhanh',
     targetMode: 'math_only',
     rings: 1,
     nodeCount: 10,
@@ -69,7 +69,7 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 2,
     name: 'Màn 2: Từ Vựng Căn Bản A1',
-    subtitle: '1 Vòng quỹ đạo · 40 từ vựng quen thuộc · 1 chạm phản xạ',
+    subtitle: '1 Vòng quỹ đạo · 40 từ vựng quen thuộc · Phản xạ từ vựng',
     targetMode: 'vocab_only',
     rings: 1,
     nodeCount: 12,
@@ -85,7 +85,7 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 3,
     name: 'Màn 3: Nhị Nguyên Hợp Nhất',
-    subtitle: '2 Vòng ngược chiều · Toán nhẩm & Từ vựng A1 · Chạm đúp',
+    subtitle: '2 Vòng ngược chiều · Kết hợp Toán & Từ vựng A1 xen kẽ',
     targetMode: 'combined',
     rings: 2,
     nodeCount: 16,
@@ -94,14 +94,14 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     category: 'a1',
     cefrLevel: 'A1',
     baseSpeed: 0.0042,
-    allowDoubleTap: true,
+    allowDoubleTap: false,
     allowHold: false,
     allowBomb: false
   },
   {
     id: 4,
     name: 'Màn 4: Phản Xạ Đa Chiều A2',
-    subtitle: '2 Vòng biến tốc · Phép tính 2 bước · Đời sống sơ cấp A2',
+    subtitle: '2 Vòng biến tốc · Kết hợp Toán 2 bước & Từ vựng A2',
     targetMode: 'combined',
     rings: 2,
     nodeCount: 20,
@@ -110,15 +110,15 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     category: 'a2',
     cefrLevel: 'A2',
     baseSpeed: 0.0045,
-    allowDoubleTap: true,
-    allowHold: true,
+    allowDoubleTap: false,
+    allowHold: false,
     allowBomb: false,
     hasSinusoidalSpeed: true
   },
   {
     id: 5,
     name: 'Màn 5: Cơn Lốc Đảo Chiều B1',
-    subtitle: '3 Vòng quay đảo chiều · Xã hội trung cấp B1 · Né bom tím',
+    subtitle: '3 Vòng quay đảo chiều · Kết hợp Toán & Từ vựng B1 · Bom tím',
     targetMode: 'combined',
     rings: 3,
     nodeCount: 24,
@@ -127,15 +127,15 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     category: 'b1',
     cefrLevel: 'B1',
     baseSpeed: 0.0048,
-    allowDoubleTap: true,
-    allowHold: true,
+    allowDoubleTap: false,
+    allowHold: false,
     allowBomb: true,
     hasReversal: true
   },
   {
     id: 6,
     name: 'Màn 6: Bóng Ma Nhấp Nháy B2',
-    subtitle: '3 Vòng nhấp nháy chữ · Phép tính tới 100 · Công sở & TOEIC B2',
+    subtitle: '3 Vòng nhấp nháy chữ · Kết hợp Toán tới 100 & Từ vựng B2 · Bom tím',
     targetMode: 'combined',
     rings: 3,
     nodeCount: 26,
@@ -144,15 +144,15 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     category: 'b2',
     cefrLevel: 'B2',
     baseSpeed: 0.005,
-    allowDoubleTap: true,
-    allowHold: true,
+    allowDoubleTap: false,
+    allowHold: false,
     allowBomb: true,
     hasMemoryBlink: true
   },
   {
     id: 7,
     name: 'Màn 7: Boss - Vòng Xoáy Vô Cực C1',
-    subtitle: 'Thử thách đỉnh cao · Toán chuỗi · Học thuật & Tech C1',
+    subtitle: 'Thử thách đỉnh cao · Toán chuỗi & Từ vựng học thuật C1',
     targetMode: 'combined',
     rings: 3,
     nodeCount: 28,
@@ -161,8 +161,8 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     category: 'c1',
     cefrLevel: 'C1',
     baseSpeed: 0.0055,
-    allowDoubleTap: true,
-    allowHold: true,
+    allowDoubleTap: false,
+    allowHold: false,
     allowBomb: true,
     hasReversal: true,
     hasSinusoidalSpeed: true,
@@ -218,6 +218,7 @@ export class GameEngine {
   private frameCount: number = 0;
 
   // Active target & prompts
+  public currentTargetType: 'math' | 'vocab' | 'schulte' = 'math';
   public currentMath: MathProblem | null = null;
   public currentVocab: VocabItem | null = null;
   public currentTargetGesture: GestureType = 'tap';
@@ -615,181 +616,33 @@ export class GameEngine {
 
   private renderNodeAppearance(node: OrbitNode, el: HTMLElement) {
     if (node.isBomb) {
-      el.className = 'orbit-node absolute flex flex-col items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple cursor-pointer select-none z-20 touch-manipulation';
-      el.innerHTML = `
-        <div class="text-sm">💣</div>
-        <div class="text-[8px] sm:text-[9px] font-mono font-bold text-purple-300">TRÁNH</div>
-      `;
+      el.className = 'orbit-node absolute flex items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple cursor-pointer select-none z-20 touch-manipulation transition-transform active:scale-90';
+      el.innerHTML = '<span class="text-base sm:text-xl">💣</span>';
       return;
     }
 
-    let borderStyle = 'border-2 border-cyan-500/80 bg-slate-900/95 text-slate-100 shadow-md glow-cyan';
-    let gestureBadge = '';
+    el.className = 'orbit-node absolute flex items-center justify-center rounded-2xl border-2 border-cyan-500/80 bg-slate-900/95 text-slate-100 shadow-md glow-cyan hover:border-cyan-400 cursor-pointer select-none z-20 p-1 touch-manipulation transition-transform active:scale-90';
 
-    if (node.gesture === 'double_tap') {
-      borderStyle = 'border-2 border-dashed border-rose-500 bg-rose-950/80 text-rose-100 shadow-md glow-red';
-      gestureBadge = '<span class="text-[7px] sm:text-[8px] text-rose-400 font-mono font-bold">ĐÚP</span>';
-    } else if (node.gesture === 'hold') {
-      borderStyle = 'border-2 border-amber-400 bg-amber-950/80 text-amber-100 shadow-md glow-gold';
-      gestureBadge = '<span class="text-[7px] sm:text-[8px] text-amber-400 font-mono font-bold">GIỮ</span>';
-    }
-
-    el.className = `orbit-node absolute flex flex-col items-center justify-center rounded-2xl ${borderStyle} cursor-pointer select-none z-20 p-1 touch-manipulation`;
-
-    const mode = this.currentLevelConfig.targetMode || 'combined';
-    let innerContent = '';
-    const word = node.vocab ? node.vocab.en : '';
-    const wordSizeClass = word.length > 7 ? 'text-[9.5px] leading-tight' : 'text-[11px] sm:text-xs leading-tight';
-    const wordCombinedClass = word.length > 7 ? 'text-[8.5px] leading-none' : 'text-[9.5px] leading-none';
-
-    if (mode === 'math_only') {
-      innerContent = `
-        <div class="w-full h-full flex flex-col items-center justify-center">
-          <span class="node-main-text font-mono text-base sm:text-lg font-black tracking-tight text-white leading-none">${node.number}</span>
-          ${gestureBadge ? `<div class="mt-0.5">${gestureBadge}</div>` : ''}
-        </div>
-      `;
-    } else if (mode === 'vocab_only') {
-      innerContent = `
-        <div class="w-full h-full flex flex-col items-center justify-center px-1">
-          <span class="node-main-text node-word-text ${wordSizeClass} font-bold tracking-tight text-white max-w-[54px] truncate text-center">
-            ${word}
-          </span>
-          ${gestureBadge ? `<div class="mt-0.5">${gestureBadge}</div>` : ''}
-        </div>
-      `;
+    if (this.currentTargetType === 'math') {
+      el.innerHTML = `<span class="node-main-text font-mono text-base sm:text-lg font-black tracking-tight text-white leading-none">${node.number}</span>`;
     } else {
-      innerContent = `
-        <div class="w-full flex items-center justify-between px-1.5 -mt-0.5">
-          <span class="node-main-text font-mono text-[11px] sm:text-xs font-black tracking-tight text-white">${node.number}</span>
-          ${gestureBadge}
-        </div>
-        <div class="node-word-text ${wordCombinedClass} font-semibold tracking-tight text-slate-100 max-w-[54px] truncate text-center mt-0.5">
-          ${word}
-        </div>
-      `;
+      const word = node.vocab ? node.vocab.en : '';
+      const wordSizeClass = word.length > 7 ? 'text-[9.5px] sm:text-[10.5px]' : 'text-xs sm:text-sm';
+      el.innerHTML = `<span class="node-main-text node-word-text ${wordSizeClass} font-bold tracking-tight text-white max-w-[54px] truncate text-center leading-none">${word}</span>`;
     }
-
-    el.innerHTML = `
-      ${innerContent}
-      <!-- Progress circular border for Hold gesture -->
-      <svg class="node-hold-circle absolute inset-0 w-full h-full -rotate-90 pointer-events-none hidden">
-        <circle cx="50%" cy="50%" r="46%" stroke="#f59e0b" stroke-width="3" fill="none" stroke-dasharray="190" stroke-dashoffset="190" stroke-linecap="round"/>
-      </svg>
-    `;
   }
 
   private bindNodeInteractions(node: OrbitNode, el: HTMLElement) {
-    let pointerStartX = 0;
-    let pointerStartY = 0;
-
     el.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       if (!this.isRunning || this.isPaused) return;
-
-      pointerStartX = e.clientX;
-      pointerStartY = e.clientY;
 
       if (node.isBomb) {
         this.triggerBombHit();
         return;
       }
 
-      if (node.gesture === 'tap') {
-        this.handleNodeEvaluation(node);
-      } else if (node.gesture === 'double_tap') {
-        const now = performance.now();
-        if (now - node.lastTapTime < 350) {
-          // Successful double tap within 350ms!
-          node.lastTapTime = 0;
-          this.handleNodeEvaluation(node);
-        } else {
-          // First tap of double tap
-          node.lastTapTime = now;
-          audio.playDoubleTapFirst();
-          // Visual pulse to prompt second tap
-          el.classList.add('scale-110');
-          setTimeout(() => el.classList.remove('scale-110'), 150);
-        }
-      } else if (node.gesture === 'hold') {
-        // Start hold timer & drag detection
-        const holdSvg = el.querySelector('.node-hold-circle') as HTMLElement;
-        const circle = el.querySelector('.node-hold-circle circle') as SVGCircleElement;
-        if (holdSvg && circle) {
-          holdSvg.classList.remove('hidden');
-          circle.style.strokeDashoffset = '190';
-        }
-
-        const startHold = performance.now();
-        const duration = 400; // 400ms hold
-
-        node.holdTimer = window.setInterval(() => {
-          const elapsed = performance.now() - startHold;
-          const ratio = Math.min(1, elapsed / duration);
-          if (circle) {
-            circle.style.strokeDashoffset = `${190 - 190 * ratio}`;
-          }
-          if (elapsed >= duration) {
-            if (node.holdTimer !== null) {
-              clearInterval(node.holdTimer);
-              node.holdTimer = null;
-            }
-            if (holdSvg) holdSvg.classList.add('hidden');
-            this.handleNodeEvaluation(node);
-          }
-        }, 30);
-
-        // Track drag & drop towards center
-        const onPointerMove = (moveEvt: PointerEvent) => {
-          const dx = moveEvt.clientX - pointerStartX;
-          const dy = moveEvt.clientY - pointerStartY;
-          if (Math.hypot(dx, dy) > 15) {
-            node.isDragging = true;
-            node.dragX = dx;
-            node.dragY = dy;
-            // Show drop overlay in central hub
-            const overlay = document.getElementById('hubDropOverlay');
-            if (overlay) overlay.classList.remove('hidden');
-            overlay?.classList.add('flex');
-          }
-        };
-
-        const onPointerUp = (upEvt: PointerEvent) => {
-          window.removeEventListener('pointermove', onPointerMove);
-          window.removeEventListener('pointerup', onPointerUp);
-
-          if (node.holdTimer !== null) {
-            clearInterval(node.holdTimer);
-            node.holdTimer = null;
-          }
-          if (holdSvg) holdSvg.classList.add('hidden');
-
-          const overlay = document.getElementById('hubDropOverlay');
-          if (overlay) {
-            overlay.classList.add('hidden');
-            overlay.classList.remove('flex');
-          }
-
-          if (node.isDragging) {
-            node.isDragging = false;
-            node.dragX = 0;
-            node.dragY = 0;
-            // Check if dropped inside central hub!
-            const hubRect = this.hubElement.getBoundingClientRect();
-            const hubCenterX = hubRect.left + hubRect.width / 2;
-            const hubCenterY = hubRect.top + hubRect.height / 2;
-            const distToCenter = Math.hypot(upEvt.clientX - hubCenterX, upEvt.clientY - hubCenterY);
-
-            if (distToCenter <= hubRect.width / 2) {
-              // Successfully dropped into central hub!
-              this.handleNodeEvaluation(node);
-            }
-          }
-        };
-
-        window.addEventListener('pointermove', onPointerMove);
-        window.addEventListener('pointerup', onPointerUp);
-      }
+      this.handleNodeEvaluation(node);
     });
   }
 
@@ -829,17 +682,29 @@ export class GameEngine {
     const vocabEl = document.getElementById('hubVocabCue');
     const hintEl = document.getElementById('hubGestureHint');
 
-    if (mathEl) mathEl.innerText = `SỐ TIẾP: ${this.schulteTargetNumber}`;
-    if (vocabEl) vocabEl.innerText = 'Chạm từ 1 đến 30';
-    if (hintEl) hintEl.innerHTML = `<span class="text-cyan-400">Đã tìm: ${this.schulteTargetNumber - 1}/30</span>`;
+    if (mathEl) {
+      mathEl.innerText = String(this.schulteTargetNumber);
+      mathEl.className = 'font-mono text-3xl sm:text-5xl md:text-6xl font-black text-white leading-none text-center';
+      mathEl.classList.remove('hidden');
+    }
+    if (vocabEl) vocabEl.classList.add('hidden');
+    if (hintEl) hintEl.classList.add('hidden');
   }
 
   private handleNodeEvaluation(node: OrbitNode) {
     this.totalHits++;
-    const isExactMatch = node.isTarget;
+
+    let isExactMatch = false;
+    if (this.currentTargetType === 'math') {
+      isExactMatch = (this.currentMath !== null && node.number === this.currentMath.result);
+    } else if (this.currentTargetType === 'vocab') {
+      isExactMatch = (this.currentVocab !== null && !!node.vocab && node.vocab.en.toLowerCase() === this.currentVocab.en.toLowerCase());
+    } else {
+      isExactMatch = node.isTarget;
+    }
 
     if (isExactMatch) {
-      // SUCCESS! Correct Number AND Correct Word
+      // SUCCESS!
       this.correctHits++;
       this.targetsCleared++;
       this.combo = Math.min(10, this.combo + 1);
@@ -858,17 +723,17 @@ export class GameEngine {
       }
 
       // Pronounce target English word immediately
-      if (node.vocab && node.vocab.en) {
+      if (this.currentTargetType === 'vocab' && node.vocab && node.vocab.en) {
         audio.speakWord(node.vocab.en);
         this.recordWordInteraction(node.vocab, false);
       }
 
       // Visual success animation
       if (node.domElement) {
-        node.domElement.classList.add('scale-125', 'bg-emerald-500/80');
+        node.domElement.classList.add('bg-emerald-500', 'border-emerald-300', 'scale-110');
         setTimeout(() => {
-          node.domElement?.classList.remove('scale-125', 'bg-emerald-500/80');
-        }, 200);
+          node.domElement?.classList.remove('bg-emerald-500', 'border-emerald-300', 'scale-110');
+        }, 180);
       }
 
       // Check level completion
@@ -889,12 +754,12 @@ export class GameEngine {
 
       // Screen shake feedback
       this.container.classList.add('screen-shake');
-      setTimeout(() => this.container.classList.remove('screen-shake'), 350);
+      setTimeout(() => this.container.classList.remove('screen-shake'), 300);
 
       // Record mistake word in notebook
-      if (node.vocab && node.vocab.en) {
-        this.recordWordInteraction(node.vocab, true);
-        storage.recordMistake(node.vocab.en);
+      if (this.currentTargetType === 'vocab' && this.currentVocab) {
+        this.recordWordInteraction(this.currentVocab, true);
+        storage.recordMistake(this.currentVocab.en);
       }
 
       // If Boss Level (id === 7), shuffle node positions on mistake!
@@ -909,7 +774,7 @@ export class GameEngine {
           if (node.domElement) {
             this.renderNodeAppearance(node, node.domElement);
           }
-        }, 300);
+        }, 250);
       }
     }
 
@@ -963,14 +828,17 @@ export class GameEngine {
       ? getVocabPoolByLevel(config.cefrLevel)
       : getVocabPoolByCategory(config.category);
 
-    // Common gesture setup
-    let targetGesture: GestureType = 'tap';
-    if (config.allowHold && Math.random() < 0.28) {
-      targetGesture = 'hold';
-    } else if (config.allowDoubleTap && Math.random() < 0.35) {
-      targetGesture = 'double_tap';
+    // Determine turn type
+    if (mode === 'math_only') {
+      this.currentTargetType = 'math';
+    } else if (mode === 'vocab_only') {
+      this.currentTargetType = 'vocab';
+    } else {
+      // Combined mode: alternate Math and Vocab per target
+      this.currentTargetType = (this.targetsCleared % 2 === 0) ? 'math' : 'vocab';
     }
-    this.currentTargetGesture = targetGesture;
+
+    this.currentTargetGesture = 'tap';
     this.targetSpawnTime = performance.now();
 
     // Reset all nodes
@@ -992,7 +860,7 @@ export class GameEngine {
     const targetIdx = indices[0];
     const bombIdx = config.allowBomb ? indices[1] : -1;
 
-    if (mode === 'math_only') {
+    if (this.currentTargetType === 'math') {
       const mathProblem = generateMathProblem(
         config.id,
         config.isChainedMath ? this.previousMathAnswer : undefined
@@ -1005,7 +873,6 @@ export class GameEngine {
       const targetNode = this.nodes[targetIdx];
       targetNode.isTarget = true;
       targetNode.number = mathProblem.result;
-      targetNode.gesture = targetGesture;
 
       // Assign distinct decoy numbers to all other nodes
       const usedNumbers = new Set<number>([mathProblem.result]);
@@ -1013,22 +880,24 @@ export class GameEngine {
         const n = this.nodes[idx];
         if (idx === bombIdx) {
           n.isBomb = true;
-          n.gesture = 'bomb';
           return;
         }
         let decoyNum = mathProblem.result;
         let attempts = 0;
-        while ((decoyNum === mathProblem.result || usedNumbers.has(decoyNum)) && attempts < 30) {
+        while ((decoyNum === mathProblem.result || usedNumbers.has(decoyNum)) && attempts < 40) {
           const delta = (Math.floor(Math.random() * 8) + 1) * (Math.random() > 0.5 ? 1 : -1);
           decoyNum = Math.max(1, mathProblem.result + delta);
           attempts++;
         }
+        if (usedNumbers.has(decoyNum)) {
+          decoyNum = mathProblem.result + attempts + 2;
+        }
         usedNumbers.add(decoyNum);
         n.number = decoyNum;
         n.isDecoyNumber = true;
-        n.gesture = this.pickGestureForNode(config);
       });
-    } else if (mode === 'vocab_only') {
+    } else {
+      // Vocab Turn
       const targetVocab = getRandomVocab(pool);
       this.currentVocab = targetVocab;
       this.currentMath = null;
@@ -1037,88 +906,24 @@ export class GameEngine {
       const targetNode = this.nodes[targetIdx];
       targetNode.isTarget = true;
       targetNode.vocab = targetVocab;
-      targetNode.gesture = targetGesture;
 
+      // Assign distinct decoy words to all other nodes
       const usedWords = new Set<string>([targetVocab.en]);
       indices.slice(1).forEach((idx) => {
         const n = this.nodes[idx];
         if (idx === bombIdx) {
           n.isBomb = true;
-          n.gesture = 'bomb';
           return;
         }
         let decoyVocab = getRandomVocab(pool, targetVocab.en);
         let attempts = 0;
-        while (usedWords.has(decoyVocab.en) && attempts < 25) {
+        while (usedWords.has(decoyVocab.en) && attempts < 35) {
           decoyVocab = getRandomVocab(pool, targetVocab.en);
           attempts++;
         }
         usedWords.add(decoyVocab.en);
         n.vocab = decoyVocab;
         n.isDecoyWord = true;
-        n.gesture = this.pickGestureForNode(config);
-      });
-    } else {
-      // COMBINED MODE (4-in-1: Math + English)
-      const mathProblem = generateMathProblem(
-        config.id,
-        config.isChainedMath ? this.previousMathAnswer : undefined
-      );
-      this.currentMath = mathProblem;
-      this.previousMathAnswer = mathProblem.result;
-
-      const targetVocab = getRandomVocab(pool);
-      this.currentVocab = targetVocab;
-
-      const targetNode = this.nodes[targetIdx];
-      targetNode.isTarget = true;
-      targetNode.number = mathProblem.result;
-      targetNode.vocab = targetVocab;
-      targetNode.gesture = targetGesture;
-
-      const decoyNum1 = indices[1];
-      const decoyNum2 = indices[2];
-      const decoyWord1 = indices[3];
-      const decoyWord2 = indices[4];
-      const actualBombIdx = config.allowBomb ? indices[5] : -1;
-
-      // Decoy Numbers (Same Number, Wrong Word)
-      [decoyNum1, decoyNum2].forEach(idx => {
-        if (idx !== undefined && this.nodes[idx]) {
-          const n = this.nodes[idx];
-          n.isDecoyNumber = true;
-          n.number = mathProblem.result;
-          n.vocab = getRandomVocab(pool, targetVocab.en);
-          n.gesture = this.pickGestureForNode(config);
-        }
-      });
-
-      // Decoy Words (Same Word, Wrong Number)
-      [decoyWord1, decoyWord2].forEach(idx => {
-        if (idx !== undefined && this.nodes[idx]) {
-          const n = this.nodes[idx];
-          n.isDecoyWord = true;
-          let delta = Math.floor(Math.random() * 5) + 1;
-          if (Math.random() > 0.5) delta = -delta;
-          n.number = Math.max(1, mathProblem.result + delta);
-          n.vocab = targetVocab;
-          n.gesture = this.pickGestureForNode(config);
-        }
-      });
-
-      // Bomb node
-      if (actualBombIdx !== -1 && this.nodes[actualBombIdx]) {
-        const bNode = this.nodes[actualBombIdx];
-        bNode.isBomb = true;
-        bNode.gesture = 'bomb';
-      }
-
-      // Remaining nodes get random numbers & words
-      indices.slice(config.allowBomb ? 6 : 5).forEach(idx => {
-        const n = this.nodes[idx];
-        n.number = Math.floor(Math.random() * 50) + 5;
-        n.vocab = getRandomVocab(pool, targetVocab.en);
-        n.gesture = this.pickGestureForNode(config);
       });
     }
 
@@ -1133,58 +938,39 @@ export class GameEngine {
     this.updateHubPrompt();
   }
 
-  private pickGestureForNode(config: LevelConfig): GestureType {
-    if (config.allowHold && Math.random() < 0.2) return 'hold';
-    if (config.allowDoubleTap && Math.random() < 0.25) return 'double_tap';
-    return 'tap';
-  }
-
   private updateHubPrompt() {
     const mathEl = document.getElementById('hubMathExpression');
     const vocabEl = document.getElementById('hubVocabCue');
     const hintEl = document.getElementById('hubGestureHint');
     const formulaEl = document.getElementById('hubTargetFormula');
-    const mode = this.currentLevelConfig.targetMode || 'combined';
 
-    // Bỏ hoàn toàn gợi ý đáp án để người chơi tự suy luận & tư duy
     if (formulaEl) {
       formulaEl.innerText = '';
       formulaEl.classList.add('hidden');
     }
-
-    if (mode === 'math_only') {
-      if (mathEl && this.currentMath) {
-        mathEl.innerText = this.currentMath.expression;
-      }
-      if (vocabEl) {
-        vocabEl.innerHTML = '<span class="text-[10px] sm:text-xs text-cyan-300 font-mono font-bold tracking-wider uppercase">TOÁN HỌC THUẦN TÚY</span>';
-      }
-    } else if (mode === 'vocab_only') {
-      if (mathEl && this.currentVocab) {
-        mathEl.innerHTML = `<span class="text-base sm:text-xl md:text-2xl font-black text-amber-300 leading-tight">"${this.currentVocab.vi}"</span>`;
-      }
-      if (vocabEl) {
-        const cefr = this.currentLevelConfig.cefrLevel || 'A1';
-        vocabEl.innerHTML = `<span class="text-[9px] sm:text-[10px] text-emerald-300 font-mono font-bold tracking-wider uppercase">TIẾNG ANH ${cefr} CĂN BẢN</span>`;
-      }
-    } else {
-      if (mathEl && this.currentMath) {
-        mathEl.innerText = this.currentMath.expression;
-      }
-      if (vocabEl && this.currentVocab) {
-        vocabEl.innerText = `"${this.currentVocab.vi}"`;
-      }
+    if (hintEl) {
+      hintEl.innerText = '';
+      hintEl.classList.add('hidden');
     }
 
-    // Gesture indicator in Central Hub (chỉ dẫn hướng dẫn thao tác, không tiết lộ đáp án)
-    if (hintEl) {
-      let gestureText = '1 Chạm';
-      if (this.currentTargetGesture === 'double_tap') {
-        gestureText = 'Chạm Đúp (Đỏ)';
-      } else if (this.currentTargetGesture === 'hold') {
-        gestureText = 'Kéo vào Tâm (Vàng)';
+    if (this.currentTargetType === 'math') {
+      if (mathEl && this.currentMath) {
+        mathEl.innerText = this.currentMath.expression;
+        mathEl.className = 'font-mono text-xl sm:text-2xl md:text-3xl font-black text-amber-300 tracking-tight leading-none text-center';
+        mathEl.classList.remove('hidden');
       }
-      hintEl.innerText = gestureText;
+      if (vocabEl) {
+        vocabEl.classList.add('hidden');
+      }
+    } else if (this.currentTargetType === 'vocab') {
+      if (vocabEl && this.currentVocab) {
+        vocabEl.innerText = this.currentVocab.vi;
+        vocabEl.className = 'font-patrick text-base sm:text-xl md:text-2xl font-bold text-cyan-300 leading-tight text-center px-1';
+        vocabEl.classList.remove('hidden');
+      }
+      if (mathEl) {
+        mathEl.classList.add('hidden');
+      }
     }
   }
 

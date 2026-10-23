@@ -213,9 +213,6 @@ function renderCampaignLevels() {
     }
 
     const ringsBadge = `${lvl.rings} Vòng (${lvl.nodeCount} bóng)`;
-    let gestureBadge = '1 Chạm';
-    if (lvl.allowHold) gestureBadge = 'Chạm · Đúp · Giữ';
-    else if (lvl.allowDoubleTap) gestureBadge = 'Chạm & Đúp';
 
     card.innerHTML = `
       <div>
@@ -233,7 +230,6 @@ function renderCampaignLevels() {
         <div class="flex items-center gap-1.5 flex-wrap text-[10px] font-mono text-slate-300 mb-4">
           ${modeBadge}
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${ringsBadge}</span>
-          <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${gestureBadge}</span>
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${lvl.targetCount} Mục Tiêu</span>
           ${lvl.allowBomb ? '<span class="px-2 py-0.5 rounded-md bg-purple-950/80 border border-purple-800 text-purple-300">Bom Tím</span>' : ''}
           ${lvl.hasReversal ? '<span class="px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-800 text-cyan-300">Đảo Chiều</span>' : ''}

@@ -125,16 +125,16 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
     }
 
     case 7: {
-      // Boss: Chained calculation remembering previous answer!
+      // Boss: Chained calculation with previous answer or rapid arithmetic
       if (previousAnswer && previousAnswer > 0) {
         const op = Math.random() > 0.5 ? '+' : '-';
         if (op === '+') {
           const delta = Math.floor(Math.random() * 12) + 3;
-          expr = `[Kết quả trước] + ${delta}`;
+          expr = `${previousAnswer} + ${delta}`;
           ans = previousAnswer + delta;
         } else {
           const delta = Math.min(previousAnswer - 2, Math.floor(Math.random() * 10) + 2);
-          expr = `[Kết quả trước] - ${delta}`;
+          expr = `${previousAnswer} - ${delta}`;
           ans = previousAnswer - delta;
         }
       } else {
