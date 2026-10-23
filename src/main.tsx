@@ -163,6 +163,13 @@ function renderCampaignLevels() {
     if (lvl.allowHold) gestureBadge = 'Chạm · Đúp · Giữ';
     else if (lvl.allowDoubleTap) gestureBadge = 'Chạm & Đúp';
 
+    let modeBadge = '<span class="px-2 py-0.5 rounded-md bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 font-bold">Toán & Anh</span>';
+    if (lvl.targetMode === 'math_only') {
+      modeBadge = '<span class="px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-600/80 text-cyan-300 font-bold">Toán Thuần Túy</span>';
+    } else if (lvl.targetMode === 'vocab_only') {
+      modeBadge = '<span class="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/80 text-emerald-300 font-bold">Tiếng Anh Thuần Túy</span>';
+    }
+
     card.innerHTML = `
       <div>
         <div class="flex items-center justify-between mb-2">
@@ -174,6 +181,7 @@ function renderCampaignLevels() {
 
         <!-- Mechanics tags -->
         <div class="flex items-center gap-1.5 flex-wrap text-[10px] font-mono text-slate-300 mb-4">
+          ${modeBadge}
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${ringsBadge}</span>
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${gestureBadge}</span>
           ${lvl.allowBomb ? '<span class="px-2 py-0.5 rounded-md bg-purple-950/80 border border-purple-800 text-purple-300">Bom Tím</span>' : ''}
@@ -486,6 +494,7 @@ function setupNavigationEvents() {
     const speed = (document.getElementById('customSpeed') as HTMLSelectElement).value;
     const actions = (document.getElementById('customActions') as HTMLSelectElement).value;
     const targetCount = parseInt((document.getElementById('customTargetCount') as HTMLSelectElement).value, 10);
+    const content = (document.getElementById('customContent') as HTMLSelectElement)?.value || 'combined';
 
     let baseSpeed = 0.005;
     let hasSinusoidal = false;
@@ -500,6 +509,7 @@ function setupNavigationEvents() {
       id: 98,
       name: 'Đấu Trường Tùy Chỉnh',
       subtitle: `${rings} Vòng · ${targetCount} Mục tiêu`,
+      targetMode: content as any,
       rings: rings,
       nodeCount: rings === 1 ? 10 : rings === 2 ? 18 : 28,
       targetCount: targetCount,

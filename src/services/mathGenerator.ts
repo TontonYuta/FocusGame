@@ -100,8 +100,9 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
       break;
     }
 
-    case 5: {
-      // Arithmetic up to 100
+    case 5:
+    case 6: {
+      // Arithmetic up to 100 / Tech challenge
       const type = Math.floor(Math.random() * 3);
       if (type === 0) {
         const a = Math.floor(Math.random() * 40) + 25;
@@ -123,7 +124,7 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
       break;
     }
 
-    case 6: {
+    case 7: {
       // Boss: Chained calculation remembering previous answer!
       if (previousAnswer && previousAnswer > 0) {
         const op = Math.random() > 0.5 ? '+' : '-';

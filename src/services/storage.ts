@@ -29,7 +29,7 @@ class StorageService {
   public getUnlockedLevels(): number[] {
     try {
       const isDevUnlocked = this.getDevUnlockAll();
-      if (isDevUnlocked) return [1, 2, 3, 4, 5, 6];
+      if (isDevUnlocked) return [1, 2, 3, 4, 5, 6, 7];
       const data = localStorage.getItem(STORAGE_KEYS.UNLOCKED_LEVELS);
       if (data) {
         const parsed = JSON.parse(data);

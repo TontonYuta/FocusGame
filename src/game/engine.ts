@@ -26,10 +26,13 @@ export interface OrbitNode {
   dragY: number;
 }
 
+export type TargetMode = 'math_only' | 'vocab_only' | 'combined';
+
 export interface LevelConfig {
   id: number;
   name: string;
   subtitle: string;
+  targetMode?: TargetMode;
   rings: number;
   nodeCount: number;
   targetCount: number;
@@ -48,8 +51,9 @@ export interface LevelConfig {
 export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 1,
-    name: 'Màn 1: Khởi Động Tâm Nhãn',
-    subtitle: '1 Vòng quỹ đạo · Phép tính < 20 · 1 Chạm',
+    name: 'Màn 1: Khởi Động Tính Nhẩm',
+    subtitle: '1 Vòng quỹ đạo · Phép tính < 20 · Toán học thuần túy',
+    targetMode: 'math_only',
     rings: 1,
     nodeCount: 10,
     targetCount: 10,
@@ -62,8 +66,24 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   },
   {
     id: 2,
-    name: 'Màn 2: Xung Đột Nhị Phân',
-    subtitle: '2 Vòng ngược chiều · Phép nhân cơ bản · Chạm đúp',
+    name: 'Màn 2: Phản Xạ Từ Vựng',
+    subtitle: '1 Vòng quỹ đạo · Từ vựng cơ bản · Tiếng Anh thuần túy',
+    targetMode: 'vocab_only',
+    rings: 1,
+    nodeCount: 12,
+    targetCount: 12,
+    timeLimitSec: 65,
+    category: 'daily',
+    baseSpeed: 0.0045,
+    allowDoubleTap: false,
+    allowHold: false,
+    allowBomb: false
+  },
+  {
+    id: 3,
+    name: 'Màn 3: Nhị Nguyên Hợp Nhất',
+    subtitle: '2 Vòng ngược chiều · Kết hợp Toán & Anh · Chạm đúp',
+    targetMode: 'combined',
     rings: 2,
     nodeCount: 18,
     targetCount: 15,
@@ -75,9 +95,10 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     allowBomb: false
   },
   {
-    id: 3,
-    name: 'Màn 3: Phản Xạ Đa Chiều',
+    id: 4,
+    name: 'Màn 4: Phản Xạ Đa Chiều',
     subtitle: '2 Vòng biến tốc · Phép tính 2 bước · Nhấn giữ & Kéo',
+    targetMode: 'combined',
     rings: 2,
     nodeCount: 22,
     targetCount: 18,
@@ -90,9 +111,10 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     hasSinusoidalSpeed: true
   },
   {
-    id: 4,
-    name: 'Màn 4: Cơn Lốc Đảo Chiều',
+    id: 5,
+    name: 'Màn 5: Cơn Lốc Đảo Chiều',
     subtitle: '3 Vòng quay đảo chiều · IELTS · Cảnh giác bom tím',
+    targetMode: 'combined',
     rings: 3,
     nodeCount: 28,
     targetCount: 20,
@@ -105,9 +127,10 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     hasReversal: true
   },
   {
-    id: 5,
-    name: 'Màn 5: Bóng Ma Nhấp Nháy',
+    id: 6,
+    name: 'Màn 6: Bóng Ma Nhấp Nháy',
     subtitle: '3 Vòng nhấp nháy chữ · Toán tới 100 · Công nghệ Tech',
+    targetMode: 'combined',
     rings: 3,
     nodeCount: 30,
     targetCount: 22,
@@ -120,9 +143,10 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     hasMemoryBlink: true
   },
   {
-    id: 6,
-    name: 'Màn 6: Boss - Vòng Xoáy Vô Cực',
+    id: 7,
+    name: 'Màn 7: Boss - Vòng Xoáy Vô Cực',
     subtitle: 'Toán chuỗi kế thừa · Đảo chiều biến tốc · Thử thách đỉnh cao',
+    targetMode: 'combined',
     rings: 3,
     nodeCount: 30,
     targetCount: 30,
@@ -541,9 +565,12 @@ export class GameEngine {
   private createNodeDom(node: OrbitNode): HTMLElement {
     const el = document.createElement('div');
     el.id = node.id;
-    el.className = 'absolute flex flex-col items-center justify-center rounded-2xl select-none cursor-pointer transition-transform duration-100 active:scale-95 z-20';
-    el.style.width = '64px';
-    el.style.height = '64px';
+    const isMobile = (this.container.clientWidth || 360) < 480;
+    const nodeSize = isMobile ? 48 : 58;
+
+    el.className = 'absolute flex flex-col items-center justify-center rounded-2xl select-none cursor-pointer transition-transform duration-100 active:scale-95 z-20 touch-manipulation';
+    el.style.width = `${nodeSize}px`;
+    el.style.height = `${nodeSize}px`;
     el.style.left = '50%';
     el.style.top = '50%';
     el.style.transform = 'translate(-50%, -50%)';
@@ -557,9 +584,12 @@ export class GameEngine {
   private createSchulteNodeDom(node: OrbitNode): HTMLElement {
     const el = document.createElement('div');
     el.id = node.id;
-    el.className = 'absolute flex items-center justify-center rounded-2xl bg-slate-900/90 border-2 border-indigo-500/80 text-white font-mono font-black text-xl shadow-lg hover:border-cyan-400 cursor-pointer select-none transition-all active:scale-90 z-20';
-    el.style.width = '52px';
-    el.style.height = '52px';
+    const isMobile = (this.container.clientWidth || 360) < 480;
+    const nodeSize = isMobile ? 44 : 52;
+
+    el.className = 'absolute flex items-center justify-center rounded-2xl bg-slate-900/90 border-2 border-indigo-500/80 text-white font-mono font-black text-lg sm:text-xl shadow-lg hover:border-cyan-400 cursor-pointer select-none transition-all active:scale-90 z-20 touch-manipulation';
+    el.style.width = `${nodeSize}px`;
+    el.style.height = `${nodeSize}px`;
     el.style.left = '50%';
     el.style.top = '50%';
     el.style.transform = 'translate(-50%, -50%)';
@@ -575,10 +605,10 @@ export class GameEngine {
 
   private renderNodeAppearance(node: OrbitNode, el: HTMLElement) {
     if (node.isBomb) {
-      el.className = 'absolute flex flex-col items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple cursor-pointer select-none z-20';
+      el.className = 'absolute flex flex-col items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple cursor-pointer select-none z-20 touch-manipulation';
       el.innerHTML = `
         <div class="text-sm">💣</div>
-        <div class="text-[9px] font-mono font-bold text-purple-300">TRÁNH</div>
+        <div class="text-[8px] sm:text-[9px] font-mono font-bold text-purple-300">TRÁNH</div>
       `;
       return;
     }
@@ -588,21 +618,47 @@ export class GameEngine {
 
     if (node.gesture === 'double_tap') {
       borderStyle = 'border-2 border-dashed border-rose-500 bg-rose-950/80 text-rose-100 shadow-md glow-red';
-      gestureBadge = '<span class="text-[8px] text-rose-400 font-mono">ĐÚP</span>';
+      gestureBadge = '<span class="text-[7px] sm:text-[8px] text-rose-400 font-mono font-bold">ĐÚP</span>';
     } else if (node.gesture === 'hold') {
       borderStyle = 'border-2 border-amber-400 bg-amber-950/80 text-amber-100 shadow-md glow-gold';
-      gestureBadge = '<span class="text-[8px] text-amber-400 font-mono">GIỮ</span>';
+      gestureBadge = '<span class="text-[7px] sm:text-[8px] text-amber-400 font-mono font-bold">GIỮ</span>';
     }
 
-    el.className = `absolute flex flex-col items-center justify-center rounded-2xl ${borderStyle} cursor-pointer select-none z-20 p-1`;
+    el.className = `absolute flex flex-col items-center justify-center rounded-2xl ${borderStyle} cursor-pointer select-none z-20 p-1 touch-manipulation`;
+
+    const mode = this.currentLevelConfig.targetMode || 'combined';
+    let innerContent = '';
+
+    if (mode === 'math_only') {
+      innerContent = `
+        <div class="w-full h-full flex flex-col items-center justify-center">
+          <span class="font-mono text-base sm:text-lg font-black tracking-tight text-white leading-none">${node.number}</span>
+          ${gestureBadge ? `<div class="mt-0.5">${gestureBadge}</div>` : ''}
+        </div>
+      `;
+    } else if (mode === 'vocab_only') {
+      innerContent = `
+        <div class="w-full h-full flex flex-col items-center justify-center px-1">
+          <span class="node-word-text text-[10px] sm:text-xs font-bold tracking-tight text-white max-w-[50px] sm:max-w-[62px] truncate text-center leading-tight">
+            ${node.vocab ? node.vocab.en : ''}
+          </span>
+          ${gestureBadge ? `<div class="mt-0.5">${gestureBadge}</div>` : ''}
+        </div>
+      `;
+    } else {
+      innerContent = `
+        <div class="w-full flex items-center justify-between px-1 -mt-0.5">
+          <span class="font-mono text-xs font-black tracking-tight text-white">${node.number}</span>
+          ${gestureBadge}
+        </div>
+        <div class="node-word-text text-[9px] font-semibold tracking-tight text-slate-200 max-w-[50px] sm:max-w-[56px] truncate text-center leading-none mt-0.5">
+          ${node.vocab ? node.vocab.en : ''}
+        </div>
+      `;
+    }
+
     el.innerHTML = `
-      <div class="w-full flex items-center justify-between px-1 -mt-0.5">
-        <span class="font-mono text-xs font-black tracking-tight text-white">${node.number}</span>
-        ${gestureBadge}
-      </div>
-      <div class="node-word-text text-[9px] font-semibold tracking-tight text-slate-200 max-w-[56px] truncate text-center leading-none mt-0.5">
-        ${node.vocab.en}
-      </div>
+      ${innerContent}
       <!-- Progress circular border for Hold gesture -->
       <svg class="node-hold-circle absolute inset-0 w-full h-full -rotate-90 pointer-events-none hidden">
         <circle cx="50%" cy="50%" r="46%" stroke="#f59e0b" stroke-width="3" fill="none" stroke-dasharray="190" stroke-dashoffset="190" stroke-linecap="round"/>
@@ -789,7 +845,7 @@ export class GameEngine {
       }
 
       // Pronounce target English word immediately
-      if (node.vocab) {
+      if (node.vocab && node.vocab.en) {
         audio.speakWord(node.vocab.en);
         this.recordWordInteraction(node.vocab, false);
       }
@@ -823,13 +879,13 @@ export class GameEngine {
       setTimeout(() => this.container.classList.remove('screen-shake'), 350);
 
       // Record mistake word in notebook
-      if (node.vocab) {
+      if (node.vocab && node.vocab.en) {
         this.recordWordInteraction(node.vocab, true);
         storage.recordMistake(node.vocab.en);
       }
 
-      // If Level 6 (Boss), shuffle node positions on mistake!
-      if (this.currentLevelConfig.id === 6) {
+      // If Boss Level (id === 7), shuffle node positions on mistake!
+      if (this.currentLevelConfig.id === 7 || this.currentLevelConfig.name.includes('Boss')) {
         this.shuffleNodePositions();
       }
 
@@ -889,22 +945,10 @@ export class GameEngine {
 
   private nextTargetPrompt() {
     const config = this.currentLevelConfig;
+    const mode = config.targetMode || 'combined';
     const pool = getVocabPoolByCategory(config.category);
 
-    // 1. Generate Math problem
-    const mathProblem = generateMathProblem(
-      config.id,
-      config.isChainedMath ? this.previousMathAnswer : undefined
-    );
-    this.currentMath = mathProblem;
-    this.previousMathAnswer = mathProblem.result;
-
-    // 2. Select target English word
-    const targetVocab = getRandomVocab(pool);
-    this.currentVocab = targetVocab;
-    this.targetSpawnTime = performance.now();
-
-    // 3. Hand Gesture for this target
+    // Common gesture setup
     let targetGesture: GestureType = 'tap';
     if (config.allowHold && Math.random() < 0.28) {
       targetGesture = 'hold';
@@ -912,8 +956,8 @@ export class GameEngine {
       targetGesture = 'double_tap';
     }
     this.currentTargetGesture = targetGesture;
+    this.targetSpawnTime = performance.now();
 
-    // 4. DECOY SYSTEM:
     // Reset all nodes
     this.nodes.forEach(n => {
       n.isTarget = false;
@@ -923,12 +967,6 @@ export class GameEngine {
       n.gesture = 'tap';
     });
 
-    // Randomly assign:
-    // 1 Target Node (Correct Number + Correct Word)
-    // 2 Decoy nodes (Correct Number + WRONG Word)
-    // 2 Decoy nodes (WRONG Number + Correct Word)
-    // 1 Bomb node (if enabled)
-    // Remaining filled with other random pairs
     const indices = Array.from({ length: this.nodes.length }, (_, i) => i);
     // Shuffle indices
     for (let i = indices.length - 1; i > 0; i--) {
@@ -937,57 +975,137 @@ export class GameEngine {
     }
 
     const targetIdx = indices[0];
-    const decoyNum1 = indices[1];
-    const decoyNum2 = indices[2];
-    const decoyWord1 = indices[3];
-    const decoyWord2 = indices[4];
-    const bombIdx = config.allowBomb ? indices[5] : -1;
+    const bombIdx = config.allowBomb ? indices[1] : -1;
 
-    // Target Node
-    const targetNode = this.nodes[targetIdx];
-    targetNode.isTarget = true;
-    targetNode.number = mathProblem.result;
-    targetNode.vocab = targetVocab;
-    targetNode.gesture = targetGesture;
+    if (mode === 'math_only') {
+      const mathProblem = generateMathProblem(
+        config.id,
+        config.isChainedMath ? this.previousMathAnswer : undefined
+      );
+      this.currentMath = mathProblem;
+      this.previousMathAnswer = mathProblem.result;
+      this.currentVocab = null;
 
-    // Decoy Numbers (Same Number, Wrong Word)
-    [decoyNum1, decoyNum2].forEach(idx => {
-      if (idx !== undefined && this.nodes[idx]) {
+      // Target Node
+      const targetNode = this.nodes[targetIdx];
+      targetNode.isTarget = true;
+      targetNode.number = mathProblem.result;
+      targetNode.gesture = targetGesture;
+
+      // Assign distinct decoy numbers to all other nodes
+      const usedNumbers = new Set<number>([mathProblem.result]);
+      indices.slice(1).forEach((idx) => {
         const n = this.nodes[idx];
+        if (idx === bombIdx) {
+          n.isBomb = true;
+          n.gesture = 'bomb';
+          return;
+        }
+        let decoyNum = mathProblem.result;
+        let attempts = 0;
+        while ((decoyNum === mathProblem.result || usedNumbers.has(decoyNum)) && attempts < 30) {
+          const delta = (Math.floor(Math.random() * 8) + 1) * (Math.random() > 0.5 ? 1 : -1);
+          decoyNum = Math.max(1, mathProblem.result + delta);
+          attempts++;
+        }
+        usedNumbers.add(decoyNum);
+        n.number = decoyNum;
         n.isDecoyNumber = true;
-        n.number = mathProblem.result;
+        n.gesture = this.pickGestureForNode(config);
+      });
+    } else if (mode === 'vocab_only') {
+      const targetVocab = getRandomVocab(pool);
+      this.currentVocab = targetVocab;
+      this.currentMath = null;
+
+      // Target Node
+      const targetNode = this.nodes[targetIdx];
+      targetNode.isTarget = true;
+      targetNode.vocab = targetVocab;
+      targetNode.gesture = targetGesture;
+
+      const usedWords = new Set<string>([targetVocab.en]);
+      indices.slice(1).forEach((idx) => {
+        const n = this.nodes[idx];
+        if (idx === bombIdx) {
+          n.isBomb = true;
+          n.gesture = 'bomb';
+          return;
+        }
+        let decoyVocab = getRandomVocab(pool, targetVocab.en);
+        let attempts = 0;
+        while (usedWords.has(decoyVocab.en) && attempts < 25) {
+          decoyVocab = getRandomVocab(pool, targetVocab.en);
+          attempts++;
+        }
+        usedWords.add(decoyVocab.en);
+        n.vocab = decoyVocab;
+        n.isDecoyWord = true;
+        n.gesture = this.pickGestureForNode(config);
+      });
+    } else {
+      // COMBINED MODE (4-in-1: Math + English)
+      const mathProblem = generateMathProblem(
+        config.id,
+        config.isChainedMath ? this.previousMathAnswer : undefined
+      );
+      this.currentMath = mathProblem;
+      this.previousMathAnswer = mathProblem.result;
+
+      const targetVocab = getRandomVocab(pool);
+      this.currentVocab = targetVocab;
+
+      const targetNode = this.nodes[targetIdx];
+      targetNode.isTarget = true;
+      targetNode.number = mathProblem.result;
+      targetNode.vocab = targetVocab;
+      targetNode.gesture = targetGesture;
+
+      const decoyNum1 = indices[1];
+      const decoyNum2 = indices[2];
+      const decoyWord1 = indices[3];
+      const decoyWord2 = indices[4];
+      const actualBombIdx = config.allowBomb ? indices[5] : -1;
+
+      // Decoy Numbers (Same Number, Wrong Word)
+      [decoyNum1, decoyNum2].forEach(idx => {
+        if (idx !== undefined && this.nodes[idx]) {
+          const n = this.nodes[idx];
+          n.isDecoyNumber = true;
+          n.number = mathProblem.result;
+          n.vocab = getRandomVocab(pool, targetVocab.en);
+          n.gesture = this.pickGestureForNode(config);
+        }
+      });
+
+      // Decoy Words (Same Word, Wrong Number)
+      [decoyWord1, decoyWord2].forEach(idx => {
+        if (idx !== undefined && this.nodes[idx]) {
+          const n = this.nodes[idx];
+          n.isDecoyWord = true;
+          let delta = Math.floor(Math.random() * 5) + 1;
+          if (Math.random() > 0.5) delta = -delta;
+          n.number = Math.max(1, mathProblem.result + delta);
+          n.vocab = targetVocab;
+          n.gesture = this.pickGestureForNode(config);
+        }
+      });
+
+      // Bomb node
+      if (actualBombIdx !== -1 && this.nodes[actualBombIdx]) {
+        const bNode = this.nodes[actualBombIdx];
+        bNode.isBomb = true;
+        bNode.gesture = 'bomb';
+      }
+
+      // Remaining nodes get random numbers & words
+      indices.slice(config.allowBomb ? 6 : 5).forEach(idx => {
+        const n = this.nodes[idx];
+        n.number = Math.floor(Math.random() * 50) + 5;
         n.vocab = getRandomVocab(pool, targetVocab.en);
         n.gesture = this.pickGestureForNode(config);
-      }
-    });
-
-    // Decoy Words (Same Word, Wrong Number)
-    [decoyWord1, decoyWord2].forEach(idx => {
-      if (idx !== undefined && this.nodes[idx]) {
-        const n = this.nodes[idx];
-        n.isDecoyWord = true;
-        let delta = Math.floor(Math.random() * 5) + 1;
-        if (Math.random() > 0.5) delta = -delta;
-        n.number = Math.max(1, mathProblem.result + delta);
-        n.vocab = targetVocab;
-        n.gesture = this.pickGestureForNode(config);
-      }
-    });
-
-    // Bomb node
-    if (bombIdx !== -1 && this.nodes[bombIdx]) {
-      const bNode = this.nodes[bombIdx];
-      bNode.isBomb = true;
-      bNode.gesture = 'bomb';
+      });
     }
-
-    // Remaining nodes get random numbers & words
-    indices.slice(config.allowBomb ? 6 : 5).forEach(idx => {
-      const n = this.nodes[idx];
-      n.number = Math.floor(Math.random() * 50) + 5;
-      n.vocab = getRandomVocab(pool, targetVocab.en);
-      n.gesture = this.pickGestureForNode(config);
-    });
 
     // Re-render all nodes
     this.nodes.forEach(n => {
@@ -1011,24 +1129,47 @@ export class GameEngine {
     const vocabEl = document.getElementById('hubVocabCue');
     const hintEl = document.getElementById('hubGestureHint');
     const formulaEl = document.getElementById('hubTargetFormula');
+    const mode = this.currentLevelConfig.targetMode || 'combined';
 
-    if (mathEl && this.currentMath) {
-      mathEl.innerText = this.currentMath.expression;
-    }
-    if (vocabEl && this.currentVocab) {
-      vocabEl.innerText = `"${this.currentVocab.vi}"`;
-    }
-    if (formulaEl && this.currentMath) {
-      formulaEl.innerText = `${this.currentMath.result} · ?`;
+    if (mode === 'math_only') {
+      if (mathEl && this.currentMath) {
+        mathEl.innerText = this.currentMath.expression;
+      }
+      if (vocabEl) {
+        vocabEl.innerHTML = '<span class="text-[10px] sm:text-xs text-cyan-300 font-mono font-bold tracking-wider uppercase">TOÁN HỌC THUẦN TÚY</span>';
+      }
+      if (formulaEl && this.currentMath) {
+        formulaEl.innerText = `= ${this.currentMath.result}`;
+      }
+    } else if (mode === 'vocab_only') {
+      if (mathEl && this.currentVocab) {
+        mathEl.innerHTML = `<span class="text-sm sm:text-lg md:text-xl font-black text-amber-300 leading-tight">"${this.currentVocab.vi}"</span>`;
+      }
+      if (vocabEl) {
+        vocabEl.innerHTML = '<span class="text-[10px] sm:text-xs text-emerald-300 font-mono font-bold tracking-wider uppercase">TỪ VỰNG TIẾNG ANH</span>';
+      }
+      if (formulaEl && this.currentVocab) {
+        formulaEl.innerText = `${this.currentVocab.en}`;
+      }
+    } else {
+      if (mathEl && this.currentMath) {
+        mathEl.innerText = this.currentMath.expression;
+      }
+      if (vocabEl && this.currentVocab) {
+        vocabEl.innerText = `"${this.currentVocab.vi}"`;
+      }
+      if (formulaEl && this.currentMath) {
+        formulaEl.innerText = `${this.currentMath.result} · ?`;
+      }
     }
 
     // Gesture indicator in Central Hub
     if (hintEl) {
-      let gestureText = '1 Chạm (Cyan)';
+      let gestureText = '1 Chạm';
       if (this.currentTargetGesture === 'double_tap') {
         gestureText = 'Chạm Đúp (Đỏ)';
       } else if (this.currentTargetGesture === 'hold') {
-        gestureText = 'Giữ/Kéo vào tâm (Vàng)';
+        gestureText = 'Giữ/Kéo (Vàng)';
       }
       hintEl.innerHTML = `Thao tác: <span class="text-cyan-300 font-bold">${gestureText}</span>`;
     }
@@ -1042,15 +1183,52 @@ export class GameEngine {
       const arenaRect = this.container.getBoundingClientRect();
       const centerX = arenaRect.width / 2;
       const centerY = arenaRect.height / 2;
-      const maxRadius = Math.min(centerX, centerY) * 0.88;
+      const maxRadius = Math.min(centerX, centerY) * 0.92;
+      const isMobile = arenaRect.width < 480;
+      const hubRadius = (this.hubElement.offsetWidth / 2) || (isMobile ? 56 : 72);
+      const nodeRadius = isMobile ? 24 : 29;
+      const innerMargin = isMobile ? 10 : 18;
+      const minOrbit = hubRadius + nodeRadius + innerMargin;
+      const maxOrbit = Math.max(minOrbit + 20, maxRadius - nodeRadius - 4);
 
-      const ringRadii = [
-        maxRadius * 0.44, // Ring 0
-        maxRadius * 0.70, // Ring 1
-        maxRadius * 0.94  // Ring 2
-      ];
+      let ringRadii: number[] = [];
+      const ringsCount = this.currentLevelConfig.rings;
+      if (ringsCount === 1) {
+        ringRadii = [(minOrbit + maxOrbit) / 2];
+      } else if (ringsCount === 2) {
+        ringRadii = [
+          minOrbit + (maxOrbit - minOrbit) * 0.18,
+          maxOrbit
+        ];
+      } else {
+        ringRadii = [
+          minOrbit,
+          minOrbit + (maxOrbit - minOrbit) * 0.5,
+          maxOrbit
+        ];
+      }
 
-      // Update ring speeds (sinusoidal modulation for Level 3, 6)
+      // Sync visual orbit guides with real dynamic radii every 30 frames
+      if (this.frameCount % 30 === 0) {
+        const guides = [
+          document.getElementById('ringGuide1'),
+          document.getElementById('ringGuide2'),
+          document.getElementById('ringGuide3'),
+        ];
+        guides.forEach((g, idx) => {
+          if (!g) return;
+          if (idx < ringRadii.length) {
+            g.style.display = 'block';
+            const diameter = Math.round(ringRadii[idx] * 2);
+            g.style.width = `${diameter}px`;
+            g.style.height = `${diameter}px`;
+          } else {
+            g.style.display = 'none';
+          }
+        });
+      }
+
+      // Update ring speeds (sinusoidal modulation for Level 4, 7)
       const config = this.currentLevelConfig;
       let speedFactor = 1.0;
       if (config.hasSinusoidalSpeed) {
