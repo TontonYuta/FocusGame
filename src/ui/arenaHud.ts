@@ -66,7 +66,9 @@ export function updateArenaHud(
   } else if (targetType === 'vocab') {
     if (hubVocab && vocab) {
       hubVocab.innerText = vocab.vi;
-      hubVocab.className = 'font-patrick text-base sm:text-xl md:text-2xl font-bold text-cyan-300 leading-tight text-center px-1';
+      const viLen = vocab.vi.length;
+      const viSizeClass = viLen >= 14 ? 'text-xs sm:text-base md:text-lg' : viLen >= 9 ? 'text-sm sm:text-lg md:text-xl' : 'text-base sm:text-xl md:text-2xl';
+      hubVocab.className = `font-patrick ${viSizeClass} font-bold text-cyan-300 leading-tight text-center px-1 break-words`;
       hubVocab.classList.remove('hidden');
     }
     if (hubMath) hubMath.classList.add('hidden');
