@@ -1,0 +1,6 @@
+{
+  "name": "Vòng Xoáy Tinh Anh - Spinning Mind",
+  "description": "Trò chơi rèn luyện nhận thức 4 trong 1: Luyện mắt mở rộng thị giác ngoại vi, tính nhẩm thần tốc, phản xạ từ vựng tiếng Anh và điều khiển thao tác ngón tay.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

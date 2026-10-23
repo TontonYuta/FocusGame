@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Vòng Xoáy Tinh Anh - Spinning Mind</title>
+  <meta name="description" content="Trò chơi rèn luyện nhận thức 4 trong 1: Luyện mắt mở rộng thị giác ngoại vi, tính nhẩm thần tốc, phản xạ từ vựng tiếng Anh và điều khiển thao tác ngón tay." />
+  <meta property="og:title" content="Vòng Xoáy Tinh Anh - Spinning Mind" />
+  <meta property="og:description" content="Trò chơi rèn luyện nhận thức 4 trong 1: Luyện mắt mở rộng thị giác ngoại vi, tính nhẩm thần tốc, phản xạ từ vựng tiếng Anh và điều khiển thao tác ngón tay." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&family=Patrick+Hand&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN for guaranteed standalone operation -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            title: ['"Patrick Hand"', 'cursive'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+            sans: ['"Inter"', 'sans-serif'],
+          },
+          colors: {
+            arena: '#070b14',
+            surface: '#0f172a',
+            surface2: '#1e293b',
+            accentCyan: '#06b6d4',
+            accentGold: '#f59e0b',
+            accentRed: '#ef4444',
+            accentPurple: '#a855f7',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom game styles & micro-animations */
+    body {
+      background-color: #070b14;
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      overflow-x: hidden;
+    }
+    .font-patrick {
+      font-family: 'Patrick Hand', cursive;
+    }
+    .font-mono-numbers {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* Glow utilities */
+    .glow-cyan {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.45);
+    }
+    .glow-cyan-lg {
+      box-shadow: 0 0 30px rgba(6, 182, 212, 0.6);
+    }
+    .glow-gold {
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.55);
+    }
+    .glow-red {
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.55);
+    }
+    .glow-purple {
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.55);
+    }
+    .glow-fire {
+      box-shadow: 0 0 25px rgba(249, 115, 22, 0.7);
+    }
+
+    /* Pulse animations */
+    @keyframes subtlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .animate-subtle-pulse {
+      animation: subtlePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dashedRotate {
+      to { stroke-dashoffset: -40; }
+    }
+    .dash-rotate {
+      animation: dashedRotate 3s linear infinite;
+    }
+
+    /* Screen shake */
+    @keyframes shake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-4px, 4px); }
+      40% { transform: translate(4px, -3px); }
+      60% { transform: translate(-3px, 3px); }
+      80% { transform: translate(3px, -2px); }
+    }
+    .screen-shake {
+      animation: shake 0.35s ease-in-out;
+    }
+
+    /* Ring guide lines */
+    .orbit-ring-guide {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 9999px;
+      pointer-events: none;
+      border: 1px dashed rgba(148, 163, 184, 0.15);
+      transition: border-color 0.3s ease;
+    }
+    .orbit-ring-guide.highlight {
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#070b14] text-slate-100 antialiased selection:bg-cyan-500 selection:text-black">
+
+  <!-- TOP APP HEADER -->
+  <header class="w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40 px-3 py-2.5 sm:px-6">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3">
+        <button id="btnHome" class="flex items-center gap-2.5 text-left group transition">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition">
+            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+              <circle cx="12" cy="2" r="1.5"></circle>
+              <circle cx="21" cy="12" r="1.5"></circle>
+              <circle cx="12" cy="22" r="1.5"></circle>
+            </svg>
+          </div>
+          <div>
+            <h1 class="font-patrick text-xl sm:text-2xl tracking-wide font-bold text-white group-hover:text-cyan-400 transition leading-none">
+              Vòng Xoáy Tinh Anh
+            </h1>
+            <p class="text-[10px] sm:text-xs text-slate-400 font-mono tracking-wider">SPINNING MIND · 4-IN-1</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Vocab Category Select (Global Filter) -->
+        <div class="relative hidden sm:block">
+          <select id="headerCategorySelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 pr-7 appearance-none cursor-pointer focus:outline-none focus:border-cyan-500 transition">
+            <option value="mixed">Chủ đề: Tổng hợp (Mix)</option>
+            <option value="daily">Chủ đề: Giao tiếp (Daily)</option>
+            <option value="toeic">Chủ đề: TOEIC & Công sở</option>
+            <option value="academic">Chủ đề: IELTS & Học thuật</option>
+            <option value="tech">Chủ đề: Công nghệ (Tech)</option>
+          </select>
+          <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <!-- Vocab Review Notebook Modal Button -->
+        <button id="btnOpenNotebook" class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-900 border border-slate-700/80 hover:border-cyan-500/60 hover:text-cyan-400 text-slate-300 flex items-center gap-1.5 transition" title="Sổ tay ôn tập từ vựng & các từ đã trả lời sai">
+          <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+            <path d="M6 6h10"></path>
+            <path d="M6 10h10"></path>
+            <path d="M6 14h6"></path>
+          </svg>
+          <span class="hidden md:inline">Sổ Tay Từ Vựng</span>
+          <span id="mistakeBadgeCount" class="hidden px-1.5 py-0.2 text-[10px] font-bold bg-rose-500/90 text-white rounded-full">0</span>
+        </button>
+
+        <!-- Sound FX Toggle -->
+        <button id="btnToggleSound" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-cyan-400 transition" title="Bật/Tắt âm thanh hiệu ứng">
+          <svg id="iconSoundOn" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg id="iconSoundOff" class="w-4 h-4 hidden text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="22" y1="9" x2="16" y2="15"></line>
+            <line x1="16" y1="9" x2="22" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- Speech Pronunciation Toggle -->
+        <button id="btnToggleSpeech" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-cyan-400 transition" title="Bật/Tắt phát âm tiếng Anh chuẩn khi chọn đúng">
+          <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="22"></line>
+          </svg>
+        </button>
+
+        <!-- How to play / Guide -->
+        <button id="btnOpenGuide" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-amber-400 transition" title="Hướng dẫn luật chơi 4-trong-1">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+
+        <!-- Unlock All Levels Dev Toggle -->
+        <button id="btnUnlockAll" class="px-2 py-1 text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 hover:border-indigo-500 text-indigo-300 hover:text-white transition" title="Mở khóa toàn bộ các màn chơi để kiểm thử">
+          Mở Khóa All
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER (Swappable Screens) -->
+  <main class="flex-1 flex flex-col relative w-full overflow-hidden">
+
+    <!-- SCREEN 1: LEVEL SELECTION & MODES -->
+    <div id="screenLevelSelect" class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-between">
+      
+      <!-- Banner / Intro -->
+      <div class="mb-5 sm:mb-7 text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800/80 pb-5">
+        <div>
+          <div class="flex items-center justify-center sm:justify-start gap-2 text-xs font-mono text-cyan-400 uppercase tracking-widest mb-1.5">
+            <span>Thị Giác Ngoại Vi</span>
+            <span>·</span>
+            <span>Tính Nhẩm</span>
+            <span>·</span>
+            <span>Từ Vựng</span>
+            <span>·</span>
+            <span>Phản Xạ Tay</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Chọn Cấp Độ Huấn Luyện
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+            Tìm kiếm mục tiêu vừa xoay vừa giải toán và dịch nghĩa. Vượt qua mỗi màn với tối thiểu 1 sao để khai mở tầng cao hơn.
+          </p>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="flex items-center justify-center p-1 bg-slate-900 border border-slate-800 rounded-xl">
+          <button id="tabCampaign" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-cyan-500 text-slate-950 shadow-sm transition">
+            Chiến Dịch (6 Màn)
+          </button>
+          <button id="tabSchulte" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">
+            Schulte 1→30 Thuần Túy
+          </button>
+          <button id="tabCustom" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">
+            Tùy Chỉnh Vô Tận
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW A: CAMPAIGN LEVEL GRID (Levels 1 to 6) -->
+      <div id="viewCampaign" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- VIEW B: SCHULTE CLASSIC 1->30 -->
+      <div id="viewSchulte" class="hidden flex-col items-center justify-center py-8 px-4 text-center bg-slate-900/60 border border-slate-800 rounded-2xl mb-6">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4 shadow-lg shadow-indigo-500/10">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 font-patrick text-2xl sm:text-3xl">Schulte Classic: Vòng Xoáy 1 → 30</h3>
+        <p class="text-sm text-slate-400 max-w-lg mb-4">
+          Chế độ luyện mắt thuần túy: 30 con số (1 đến 30) quay trên 3 vòng đồng tâm. Giữ mắt tại tâm và dùng thị giác ngoại vi chạm tuần tự từ 1 đến 30 trong thời gian nhanh nhất!
+        </p>
+        <div class="flex items-center gap-6 mb-6 font-mono text-sm bg-slate-950/80 px-4 py-2.5 rounded-xl border border-slate-800">
+          <div>Kỷ lục cá nhân: <span id="schulteBestRecord" class="text-amber-400 font-bold">Chưa có</span></div>
+          <div>Mục tiêu: <span class="text-cyan-400 font-bold">30 số liên tiếp</span></div>
+        </div>
+        <button id="btnStartSchulte" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-400 hover:to-cyan-400 text-slate-950 font-bold text-sm tracking-wide shadow-lg shadow-cyan-500/25 transition active:scale-95">
+          BẮT ĐẦU LUYỆN MẮT 1→30
+        </button>
+      </div>
+
+      <!-- VIEW C: CUSTOM SANDBOX MODE -->
+      <div id="viewCustom" class="hidden flex-col bg-slate-900/70 border border-slate-800 rounded-2xl p-5 sm:p-6 mb-6">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Thiết Lập Đấu Trường Tự Do
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Số Vòng Quỹ Đạo</label>
+            <select id="customRings" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+              <option value="1">1 Vòng (10 bong bóng)</option>
+              <option value="2" selected>2 Vòng (18 bong bóng)</option>
+              <option value="3">3 Vòng (28 bong bóng)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Tốc Độ Vòng Xoáy</label>
+            <select id="customSpeed" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+              <option value="slow">Chậm rãi (0.003 rad/s)</option>
+              <option value="medium" selected>Tiêu chuẩn (0.005 rad/s)</option>
+              <option value="fast">Thần tốc (0.008 rad/s)</option>
+              <option value="chaos">Biến thiên hỗn loạn (Chaos)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Bộ Thao Tác Ngón Tay</label>
+            <select id="customActions" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+              <option value="tap_only">Chỉ 1 chạm (Cyan)</option>
+              <option value="tap_double">1 chạm + Chạm đúp (Cyan & Đỏ)</option>
+              <option value="all" selected>Đầy đủ 3 thao tác (Cyan, Đỏ, Vàng)</option>
+              <option value="all_bomb">Đầy đủ + Bom tím cạm bẫy</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Số Lượng Mục Tiêu</label>
+            <select id="customTargetCount" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+              <option value="10">10 Mục tiêu (Nhanh)</option>
+              <option value="20" selected>20 Mục tiêu (Chuẩn)</option>
+              <option value="30">30 Mục tiêu (Thử thách)</option>
+              <option value="50">50 Mục tiêu (Marathon)</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <button id="btnStartCustom" class="px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs tracking-wide shadow-lg shadow-amber-400/20 transition active:scale-95">
+            BẮT ĐẦU CHẾ ĐỘ TÙY CHỈNH
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Legend Footer -->
+      <div class="p-3 bg-slate-900/40 border border-slate-800/80 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
+        <div class="flex items-center gap-4 flex-wrap">
+          <span class="font-bold text-slate-300">Quy tắc thao tác:</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400 inline-block shadow-sm"></span> Cyan: 1 Chạm</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full border-2 border-dashed border-rose-500 bg-rose-500/20 inline-block"></span> Đỏ: Chạm đúp (&lt;350ms)</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm"></span> Vàng: Nhấn giữ 400ms / Kéo vào tâm</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-500 inline-block shadow-sm"></span> Tím: BOM CẤM CHẠM (-5s)</span>
+        </div>
+        <div class="text-[11px] text-slate-500">Mẹo: Cố gắng giữ mắt cố định ở tâm để kích hoạt vùng nhìn ngoại vi!</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: IN-GAME ARENA VIEW -->
+    <div id="screenGameArena" class="hidden flex-1 flex flex-col justify-between p-2 sm:p-4 relative">
+      
+      <!-- IN-GAME TOP HUD -->
+      <div class="w-full max-w-4xl mx-auto flex items-center justify-between gap-2 px-3 py-2 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-800 shadow-xl z-20">
+        <!-- Level badge & Exit -->
+        <div class="flex items-center gap-2">
+          <button id="btnPauseGame" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition" title="Tạm dừng / Thoát màn">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+          <div>
+            <div id="hudLevelTitle" class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 font-patrick text-base sm:text-lg">
+              Màn 1: Khởi Động
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono flex items-center gap-2">
+              <span id="hudTargetCount">Mục tiêu: 0/10</span>
+              <span>·</span>
+              <span id="hudAccuracy">Độ chính xác: 100%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Combo Fire Badge -->
+        <div id="hudComboContainer" class="flex items-center gap-1.5 px-3 py-1 bg-slate-950 rounded-xl border border-slate-800 transition transform">
+          <span id="hudComboFire" class="hidden text-amber-400 animate-bounce text-sm">🔥</span>
+          <span class="text-[11px] text-slate-400 uppercase font-mono">COMBO</span>
+          <span id="hudComboValue" class="text-sm font-extrabold font-mono text-cyan-400">x1</span>
+        </div>
+
+        <!-- Score & Time Gauge -->
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <div id="hudScore" class="text-sm sm:text-base font-extrabold font-mono text-amber-400">0000</div>
+            <div class="text-[10px] text-slate-400 font-mono">ĐIỂM SỐ</div>
+          </div>
+          <!-- Circular Time Countdown indicator -->
+          <div class="relative w-10 h-10 flex items-center justify-center">
+            <svg class="w-10 h-10 -rotate-90">
+              <circle cx="20" cy="20" r="16" stroke="rgba(255,255,255,0.1)" stroke-width="3" fill="none" />
+              <circle id="hudTimerCircle" cx="20" cy="20" r="16" stroke="#06b6d4" stroke-width="3" fill="none" stroke-dasharray="100.5" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-300" />
+            </svg>
+            <span id="hudTimerSec" class="absolute text-[11px] font-bold font-mono text-white">60</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN ROTATING ARENA WRAPPER -->
+      <div id="arenaContainer" class="flex-1 w-full max-w-[680px] aspect-square mx-auto relative flex items-center justify-center my-auto overflow-hidden">
+        
+        <!-- Concentric Ring Visual Guides -->
+        <div id="ringGuide1" class="orbit-ring-guide w-[240px] h-[240px]"></div>
+        <div id="ringGuide2" class="orbit-ring-guide w-[390px] h-[390px]"></div>
+        <div id="ringGuide3" class="orbit-ring-guide w-[540px] h-[540px]"></div>
+
+        <!-- CENTRAL HUB (TÂM VÒNG XOÁY) -->
+        <div id="centralHub" class="absolute z-30 w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-slate-900/95 border-2 border-cyan-500/80 shadow-2xl glow-cyan flex flex-col items-center justify-center text-center p-2.5 cursor-default transition-all duration-300">
+          
+          <!-- Countdown Ring on Hub Perimeter -->
+          <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none p-0.5">
+            <circle cx="50%" cy="50%" r="48%" stroke="rgba(6,182,212,0.15)" stroke-width="4" fill="none"/>
+            <circle id="hubProgressCircle" cx="50%" cy="50%" r="48%" stroke="#06b6d4" stroke-width="4" fill="none" stroke-dasharray="400" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-200"/>
+          </svg>
+
+          <!-- Wave Target Indicator -->
+          <div class="text-[10px] uppercase font-mono tracking-wider text-cyan-400 mb-0.5 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+            <span>MỤC TIÊU CẦN TÌM</span>
+          </div>
+
+          <!-- Prompt 1: Mental Math Expression -->
+          <div id="hubMathExpression" class="font-mono text-lg sm:text-2xl font-black text-amber-400 tracking-tight leading-tight my-0.5">
+            15 + 8 - 4
+          </div>
+
+          <!-- Prompt 2: Vietnamese Vocabulary Cue / Meaning -->
+          <div id="hubVocabCue" class="text-xs sm:text-sm font-semibold text-slate-200 leading-snug px-1.5 max-w-[140px] sm:max-w-[160px] line-clamp-2">
+            "Bền vững"
+          </div>
+
+          <!-- Bottom Cue / Hint -->
+          <div id="hubGestureHint" class="mt-1 text-[10px] font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-full border border-slate-700/60">
+            Tìm: <span id="hubTargetFormula" class="text-cyan-300 font-bold">19 · ?</span>
+          </div>
+
+          <!-- Drop target aura (active when dragging amber node) -->
+          <div id="hubDropOverlay" class="absolute inset-0 rounded-full border-2 border-dashed border-amber-400 bg-amber-400/20 hidden flex-col items-center justify-center text-amber-300 text-xs font-bold pointer-events-none">
+            <svg class="w-6 h-6 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Thả vào đây</span>
+          </div>
+        </div>
+
+        <!-- DYNAMIC SATELLITE NODES CONTAINER -->
+        <div id="nodesOrbitLayer" class="absolute inset-0 w-full h-full pointer-events-auto">
+          <!-- Orbiting nodes are created and positioned via polar math in JS -->
+        </div>
+
+        <!-- Direction Reversal Flash Overlay -->
+        <div id="reversalFlashOverlay" class="absolute inset-0 pointer-events-none bg-cyan-400/0 rounded-full transition duration-300"></div>
+      </div>
+
+      <!-- BOTTOM IN-GAME REMINDER LEGEND -->
+      <div class="w-full max-w-xl mx-auto flex items-center justify-center gap-3 sm:gap-6 py-2 px-3 bg-slate-900/60 backdrop-blur border border-slate-800/80 rounded-xl text-[11px] sm:text-xs text-slate-300">
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400"></div>
+          <span>1 Chạm</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded-full border border-dashed border-rose-500 bg-rose-500/30"></div>
+          <span>Chạm Đúp</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-3 h-3 rounded-full bg-amber-400 shadow-sm shadow-amber-400"></div>
+          <span>Giữ 400ms / Kéo</span>
+        </div>
+        <div id="legendBomb" class="flex items-center gap-1.5 hidden">
+          <div class="w-3 h-3 rounded-full bg-purple-500 shadow-sm shadow-purple-500"></div>
+          <span>Tránh Bom</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: POST-GAME BRAIN ANALYTICS & RADAR CHART -->
+  <div id="modalAnalytics" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      
+      <!-- Result Banner Header -->
+      <div id="analyticsHeader" class="p-5 text-center bg-gradient-to-b from-cyan-950/80 to-slate-900 border-b border-slate-800 relative">
+        <div id="analyticsStatusIcon" class="w-14 h-14 mx-auto mb-2 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        </div>
+        <h3 id="analyticsTitle" class="text-2xl font-black text-white font-patrick text-3xl">HOÀN THÀNH HUẤN LUYỆN!</h3>
+        <p id="analyticsSubtitle" class="text-xs text-slate-400 mt-0.5">Khả năng phối hợp 4 kỹ năng của não bộ đã được ghi nhận.</p>
+
+        <!-- Star Rating Display -->
+        <div id="analyticsStars" class="flex items-center justify-center gap-2 mt-3">
+          <svg class="w-8 h-8 text-amber-400 fill-amber-400 animate-bounce" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg class="w-8 h-8 text-amber-400 fill-amber-400 animate-bounce" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg class="w-8 h-8 text-amber-400 fill-amber-400 animate-bounce" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+      </div>
+
+      <!-- Body: Stats + Radar Canvas + Words Review -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-5">
+        
+        <!-- Summary Numbers -->
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <div class="p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div id="statTotalScore" class="text-base sm:text-lg font-bold font-mono text-amber-400">0</div>
+            <div class="text-[10px] text-slate-400 uppercase">Điểm Số</div>
+          </div>
+          <div class="p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div id="statClearTime" class="text-base sm:text-lg font-bold font-mono text-cyan-400">0s</div>
+            <div class="text-[10px] text-slate-400 uppercase">Thời Gian</div>
+          </div>
+          <div class="p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div id="statAccuracy" class="text-base sm:text-lg font-bold font-mono text-emerald-400">0%</div>
+            <div class="text-[10px] text-slate-400 uppercase">Chính Xác</div>
+          </div>
+          <div class="p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+            <div id="statAvgReflex" class="text-base sm:text-lg font-bold font-mono text-purple-400">0ms</div>
+            <div class="text-[10px] text-slate-400 uppercase">Phản Xạ TB</div>
+          </div>
+        </div>
+
+        <!-- 4-AXIS RADAR CHART CANVAS -->
+        <div class="bg-slate-950/80 rounded-2xl p-3 border border-slate-800 flex flex-col items-center">
+          <div class="text-xs font-bold text-slate-300 mb-1 flex items-center justify-between w-full px-2">
+            <span>BIỂU ĐỒ 4 CHỈ SỐ NHẬN THỨC</span>
+            <span class="text-[10px] font-mono text-cyan-400">THANG ĐIỂM 100</span>
+          </div>
+          <canvas id="radarChartCanvas" width="300" height="260" class="max-w-full"></canvas>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full text-[10px] text-center font-mono mt-2 pt-2 border-t border-slate-800/80">
+            <div class="text-cyan-400">Tinh Mắt: <span id="radarScoreVision" class="font-bold text-white">0</span></div>
+            <div class="text-amber-400">Tính Nhẩm: <span id="radarScoreMath" class="font-bold text-white">0</span></div>
+            <div class="text-emerald-400">Từ Vựng: <span id="radarScoreVocab" class="font-bold text-white">0</span></div>
+            <div class="text-rose-400">Phản Xạ: <span id="radarScoreReflex" class="font-bold text-white">0</span></div>
+          </div>
+        </div>
+
+        <!-- REVIEW WORDS IN THIS MATCH -->
+        <div>
+          <div class="text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
+            <span>TỪ VỰNG XUẤT HIỆN TRONG MÀN</span>
+            <span class="text-[10px] text-slate-400">Bấm loa để nghe phát âm</span>
+          </div>
+          <div id="analyticsWordsList" class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-end gap-2">
+        <button id="btnAnalyticsMenu" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition">
+          Về Menu
+        </button>
+        <button id="btnAnalyticsRetry" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 transition">
+          Chơi Lại
+        </button>
+        <button id="btnAnalyticsNext" class="px-5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-slate-950 shadow-md shadow-cyan-500/20 transition">
+          Màn Tiếp Theo →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SỔ TAY TỪ VỰNG (VOCABULARY NOTEBOOK & MISTAKES REVIEW) -->
+  <div id="modalNotebook" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/><path d="M6 14h6"/></svg>
+          </div>
+          <div>
+            <h3 class="font-patrick text-xl sm:text-2xl font-bold text-white leading-none">Sổ Tay Từ Vựng Tinh Anh</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Kho từ vựng chuẩn & theo dõi các từ bạn đã chọn nhầm</p>
+          </div>
+        </div>
+        <button id="btnCloseNotebook" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Filters & Search -->
+      <div class="p-3 sm:p-4 border-b border-slate-800 bg-slate-950/40 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+          <button data-filter="all" class="btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-cyan-500 text-slate-950 transition">Tất Cả (104)</button>
+          <button data-filter="mistakes" class="btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1">
+            <span>Từ Hay Sai</span>
+            <span id="notebookMistakeCountTag" class="px-1 text-[10px] bg-rose-500 text-white rounded-full">0</span>
+          </button>
+          <button data-filter="daily" class="btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition">Giao Tiếp</button>
+          <button data-filter="toeic" class="btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition">TOEIC</button>
+          <button data-filter="academic" class="btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition">IELTS</button>
+          <button data-filter="tech" class="btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition">Tech</button>
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <div class="relative flex-1 sm:w-48">
+            <input id="searchVocabInput" type="text" placeholder="Tìm kiếm từ..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500" />
+          </div>
+          <button id="btnClearMistakes" class="px-2.5 py-1 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 border border-rose-900/60 rounded-lg transition" title="Xóa lịch sử từ đã sai">
+            Xóa Lỗi
+          </button>
+        </div>
+      </div>
+
+      <!-- Words List -->
+      <div id="notebookListContainer" class="p-4 overflow-y-auto space-y-2 flex-1">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GAMEPLAY GUIDE -->
+  <div id="modalGuide" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <h3 class="font-patrick text-2xl font-bold text-white">Hướng Dẫn Huấn Luyện 4-Trong-1</h3>
+        <button id="btnCloseGuide" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="p-5 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+          <div class="font-bold text-cyan-400 mb-1">1. Thị giác ngoại vi (Schulte Orbit)</div>
+          <p>Mắt luôn nhìn vào tâm điều khiển. Không đảo mắt theo từng bóng; dùng khóe mắt và vùng nhìn biên để phát hiện vị trí mục tiêu.</p>
+        </div>
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+          <div class="font-bold text-amber-400 mb-1">2. Tính nhẩm & Từ vựng đồng thời</div>
+          <p>Tâm hiển thị phép tính (VD: 15 + 8 - 4) và nghĩa tiếng Việt (VD: "Bền vững"). Bạn phải tìm bóng mang <strong>CẢ SỐ ĐÚNG (19)</strong> và <strong>TỪ ĐÚNG (Sustainable)</strong>.</p>
+        </div>
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+          <div class="font-bold text-rose-400 mb-1">3. Cạm bẫy Decoy thị giác</div>
+          <p>Luôn có ít nhất 2 bóng có số đúng nhưng từ sai, và 2 bóng có từ đúng nhưng số sai. Nếu vội vàng chạm sai sẽ bị trừ combo!</p>
+        </div>
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+          <div class="font-bold text-emerald-400 mb-1">4. Quy chuẩn thao tác ngón tay</div>
+          <ul class="list-disc list-inside space-y-1 mt-1 text-slate-400">
+            <li><strong class="text-cyan-400">Cyan:</strong> 1 chạm duy nhất.</li>
+            <li><strong class="text-rose-400">Đỏ viền đứt đoạn:</strong> Chạm đúp 2 lần liên tiếp dưới 350ms.</li>
+            <li><strong class="text-amber-400">Vàng phát sáng:</strong> Nhấn giữ 400ms HOẶC kéo thả trực tiếp vào tâm.</li>
+            <li><strong class="text-purple-400">Tím (Bom):</strong> Tuyệt đối không chạm; chạm sẽ bị trừ 5 giây và vỡ combo!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PAUSE / EXIT CONFIRMATION -->
+  <div id="modalPause" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-xs bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-5 text-center">
+      <h3 class="font-patrick text-2xl font-bold text-white mb-2">Đang Tạm Dừng</h3>
+      <p class="text-xs text-slate-400 mb-5">Bạn muốn tiếp tục huấn luyện hay quay lại màn hình chọn cấp độ?</p>
+      <div class="space-y-2">
+        <button id="btnResumeGame" class="w-full py-2.5 text-xs font-bold rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition">
+          TIẾP TỤC CHƠI
+        </button>
+        <button id="btnRestartCurrentLevel" class="w-full py-2 text-xs font-medium rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition">
+          Chơi lại màn này
+        </button>
+        <button id="btnQuitToMenu" class="w-full py-2 text-xs font-medium rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 transition">
+          Thoát ra Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLETE ES6 MODULAR LOGIC SCRIPT -->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
