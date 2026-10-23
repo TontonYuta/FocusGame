@@ -30,6 +30,8 @@ const iconSoundOff = document.getElementById('iconSoundOff')!;
 const btnToggleSpeech = document.getElementById('btnToggleSpeech')!;
 const btnOpenGuide = document.getElementById('btnOpenGuide')!;
 const btnUnlockAll = document.getElementById('btnUnlockAll')!;
+const mobileCategorySelect = document.getElementById('mobileCategorySelect') as HTMLSelectElement | null;
+const btnUnlockAllMobile = document.getElementById('btnUnlockAllMobile') as HTMLButtonElement | null;
 
 // Arena HUD
 const hudLevelTitle = document.getElementById('hudLevelTitle')!;
@@ -96,7 +98,27 @@ function init() {
 
   // Sync Category
   const savedCat = storage.getGlobalCategory();
-  if (headerCategorySelect) headerCategorySelect.value = savedCat;
+  if (headerCategorySelect) {
+    headerCategorySelect.value = savedCat;
+    headerCategorySelect.addEventListener('change', () => {
+      storage.setGlobalCategory(headerCategorySelect.value);
+      if (mobileCategorySelect) mobileCategorySelect.value = headerCategorySelect.value;
+    });
+  }
+  if (mobileCategorySelect) {
+    mobileCategorySelect.value = savedCat;
+    mobileCategorySelect.addEventListener('change', () => {
+      storage.setGlobalCategory(mobileCategorySelect.value);
+      if (headerCategorySelect) headerCategorySelect.value = mobileCategorySelect.value;
+    });
+  }
+  if (btnUnlockAllMobile) {
+    btnUnlockAllMobile.addEventListener('click', () => {
+      const current = storage.getDevUnlockAll();
+      storage.setDevUnlockAll(!current);
+      renderCampaignLevels();
+    });
+  }
 
   // Initialize Game Engine
   const arenaContainer = document.getElementById('arenaContainer')!;
@@ -133,14 +155,22 @@ function renderCampaignLevels() {
 
   btnUnlockAll.innerText = isDevAll ? 'Đã Mở Khóa All' : 'Mở Khóa All';
   btnUnlockAll.className = isDevAll
-    ? 'px-2 py-1 text-[11px] font-mono rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 font-bold'
-    : 'px-2 py-1 text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 hover:text-white transition';
+    ? 'px-2 py-1 text-[11px] font-mono rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 font-bold hidden sm:block'
+    : 'px-2 py-1 text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 hover:text-white transition hidden sm:block';
+
+  if (btnUnlockAllMobile) {
+    btnUnlockAllMobile.innerText = isDevAll ? 'Đã Mở All' : 'Mở Khóa All';
+    btnUnlockAllMobile.className = isDevAll
+      ? 'px-2.5 py-1.5 text-[11px] font-mono rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 font-bold sm:hidden'
+      : 'px-2.5 py-1.5 text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 font-semibold sm:hidden';
+  }
 
   CAMPAIGN_LEVELS.forEach(lvl => {
     const isUnlocked = isDevAll || unlocked.includes(lvl.id);
     const rec = records[lvl.id] || { stars: 0, highScore: 0, bestTimeSec: 0 };
 
     const card = document.createElement('div');
+    card.id = `cardCampaignLevel-${lvl.id}`;
     card.className = `p-4 sm:p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
       isUnlocked
         ? 'bg-slate-900/90 border-slate-700/80 hover:border-cyan-500/70 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer'
@@ -232,6 +262,7 @@ function startCampaignLevel(config: LevelConfig) {
 }
 
 function showScreen(screen: 'levels' | 'arena') {
+  window.scrollTo(0, 0);
   if (screen === 'levels') {
     screenLevelSelect.classList.remove('hidden');
     screenGameArena.classList.add('hidden');

@@ -152,10 +152,10 @@
   <header class="w-full border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md sticky top-0 z-40 px-2.5 py-2 sm:px-6 sm:py-2.5">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
       <!-- Logo & Title -->
-      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <button id="btnHome" class="flex items-center gap-2 text-left group transition">
-          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition shrink-0">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0 shrink">
+        <button id="btnHome" class="flex items-center gap-1.5 sm:gap-2 text-left group transition min-w-0">
+          <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition shrink-0">
+            <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
               <circle cx="12" cy="12" r="3"></circle>
               <circle cx="12" cy="2" r="1.5"></circle>
@@ -163,34 +163,34 @@
               <circle cx="12" cy="22" r="1.5"></circle>
             </svg>
           </div>
-          <div>
-            <h1 class="font-patrick text-lg sm:text-2xl tracking-wide font-bold text-white group-hover:text-cyan-400 transition leading-none">
+          <div class="min-w-0">
+            <h1 class="font-patrick text-base sm:text-xl md:text-2xl tracking-wide font-bold text-white group-hover:text-cyan-400 transition leading-none truncate">
               Vòng Xoáy Tinh Anh
             </h1>
-            <p class="text-[9px] sm:text-xs text-slate-400 font-mono tracking-wider">SPINNING MIND · 4-IN-1</p>
+            <p class="text-[9px] sm:text-xs text-slate-400 font-mono tracking-wider hidden sm:block">SPINNING MIND · 4-IN-1</p>
           </div>
         </button>
       </div>
 
       <!-- Quick Action Controls -->
-      <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-        <!-- Vocab Category Select (Global Filter) -->
-        <div class="relative">
-          <select id="headerCategorySelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-[11px] sm:text-xs text-slate-300 rounded-lg px-2 py-1.5 pr-6 sm:pr-7 appearance-none cursor-pointer focus:outline-none focus:border-cyan-500 transition max-w-[110px] sm:max-w-none truncate">
-            <option value="mixed">Tổng hợp (Mix)</option>
-            <option value="daily">Giao tiếp (Daily)</option>
-            <option value="toeic">TOEIC & Công sở</option>
-            <option value="academic">IELTS Học thuật</option>
-            <option value="tech">Công nghệ (Tech)</option>
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <!-- Vocab Category Select (Global Filter - Desktop) -->
+        <div class="relative hidden lg:block">
+          <select id="headerCategorySelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 pr-7 appearance-none cursor-pointer focus:outline-none focus:border-cyan-500 transition">
+            <option value="mixed">Chủ đề: Tổng hợp (Mix)</option>
+            <option value="daily">Chủ đề: Giao tiếp (Daily)</option>
+            <option value="toeic">Chủ đề: TOEIC & Công sở</option>
+            <option value="academic">Chủ đề: IELTS & Học thuật</option>
+            <option value="tech">Chủ đề: Công nghệ (Tech)</option>
           </select>
-          <div class="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </div>
         </div>
 
         <!-- Vocab Review Notebook Modal Button -->
-        <button id="btnOpenNotebook" class="h-8 px-2 sm:px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-900 border border-slate-700/80 hover:border-cyan-500/60 hover:text-cyan-400 text-slate-300 flex items-center gap-1 sm:gap-1.5 transition shrink-0" title="Sổ tay ôn tập từ vựng & các từ đã trả lời sai">
-          <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="btnOpenNotebook" class="w-7 h-7 sm:w-8 sm:h-8 md:w-auto md:px-2.5 md:py-1.5 text-xs font-medium rounded-lg bg-slate-900 border border-slate-700/80 hover:border-cyan-500/60 hover:text-cyan-400 text-slate-300 flex items-center justify-center gap-1.5 transition shrink-0" title="Sổ tay ôn tập từ vựng & các từ đã trả lời sai">
+          <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
             <path d="M6 6h10"></path>
             <path d="M6 10h10"></path>
@@ -201,13 +201,13 @@
         </button>
 
         <!-- Sound FX Toggle -->
-        <button id="btnToggleSound" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-cyan-400 transition shrink-0" title="Bật/Tắt âm thanh hiệu ứng">
-          <svg id="iconSoundOn" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="btnToggleSound" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-cyan-400 transition shrink-0" title="Bật/Tắt âm thanh hiệu ứng">
+          <svg id="iconSoundOn" class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
           </svg>
-          <svg id="iconSoundOff" class="w-4 h-4 hidden text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="iconSoundOff" class="w-3.5 h-3.5 sm:w-4 sm:h-4 hidden text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <line x1="22" y1="9" x2="16" y2="15"></line>
             <line x1="16" y1="9" x2="22" y2="15"></line>
@@ -215,8 +215,8 @@
         </button>
 
         <!-- Speech Pronunciation Toggle -->
-        <button id="btnToggleSpeech" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-cyan-400 transition shrink-0" title="Bật/Tắt phát âm tiếng Anh">
-          <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="btnToggleSpeech" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-cyan-400 transition shrink-0" title="Bật/Tắt phát âm tiếng Anh">
+          <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
             <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
             <line x1="12" y1="19" x2="12" y2="22"></line>
@@ -224,16 +224,16 @@
         </button>
 
         <!-- How to play / Guide -->
-        <button id="btnOpenGuide" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-amber-400 transition shrink-0" title="Hướng dẫn luật chơi">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="btnOpenGuide" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-amber-400 transition shrink-0" title="Hướng dẫn luật chơi">
+          <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
         </button>
 
-        <!-- Unlock All Levels Dev Toggle -->
-        <button id="btnUnlockAll" class="px-2 py-1 text-[10px] sm:text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 hover:border-indigo-500 text-indigo-300 hover:text-white transition shrink-0" title="Mở khóa toàn bộ các màn chơi để kiểm thử">
+        <!-- Unlock All Levels Dev Toggle (Desktop) -->
+        <button id="btnUnlockAll" class="px-2 py-1 text-[10px] sm:text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 hover:border-indigo-500 text-indigo-300 hover:text-white transition shrink-0 hidden sm:block" title="Mở khóa toàn bộ các màn chơi để kiểm thử">
           Mở All
         </button>
       </div>
@@ -278,17 +278,28 @@
             Tùy Chỉnh
           </button>
         </div>
-          </button>
-          <button id="tabSchulte" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">
-            Schulte 1→30 Thuần Túy
-          </button>
-          <button id="tabCustom" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">
-            Tùy Chỉnh Vô Tận
-          </button>
-        </div>
       </div>
 
-      <!-- VIEW A: CAMPAIGN LEVEL GRID (Levels 1 to 6) -->
+      <!-- Mobile Quick Toolbar: Category & Unlock All -->
+      <div class="flex items-center justify-between gap-2 mb-3 lg:hidden">
+        <div class="relative flex-1 max-w-[220px]">
+          <select id="mobileCategorySelect" class="w-full bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 pr-7 appearance-none cursor-pointer focus:outline-none focus:border-cyan-500 transition">
+            <option value="mixed">Chủ đề: Tổng hợp (Mix)</option>
+            <option value="daily">Chủ đề: Giao tiếp (Daily)</option>
+            <option value="toeic">Chủ đề: TOEIC & Công sở</option>
+            <option value="academic">Chủ đề: IELTS & Học thuật</option>
+            <option value="tech">Chủ đề: Công nghệ (Tech)</option>
+          </select>
+          <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+        <button id="btnUnlockAllMobile" class="px-2.5 py-1.5 text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 font-semibold sm:hidden">
+          Mở Khóa All
+        </button>
+      </div>
+
+      <!-- VIEW A: CAMPAIGN LEVEL GRID (Levels 1 to 7) -->
       <div id="viewCampaign" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <!-- Rendered dynamically by JavaScript -->
       </div>
@@ -465,8 +476,10 @@
           </div>
 
           <!-- Bottom Cue / Hint -->
-          <div id="hubGestureHint" class="mt-0.5 sm:mt-1 text-[8px] sm:text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded-full border border-slate-700/60 max-w-[105px] sm:max-w-none truncate">
-            Tìm: <span id="hubTargetFormula" class="text-cyan-300 font-bold">19 · ?</span>
+          <div class="mt-0.5 sm:mt-1 flex items-center justify-center gap-1 text-[8px] sm:text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded-full border border-slate-700/60 max-w-[110px] sm:max-w-none">
+            <span id="hubTargetFormula" class="text-cyan-300 font-bold truncate">19 · ?</span>
+            <span class="text-slate-500">·</span>
+            <span id="hubGestureHint" class="text-slate-300 font-semibold truncate">1 Chạm</span>
           </div>
 
           <!-- Drop target aura (active when dragging amber node) -->

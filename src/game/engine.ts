@@ -587,13 +587,13 @@ export class GameEngine {
     const isMobile = (this.container.clientWidth || 360) < 480;
     const nodeSize = isMobile ? 44 : 52;
 
-    el.className = 'absolute flex items-center justify-center rounded-2xl bg-slate-900/90 border-2 border-indigo-500/80 text-white font-mono font-black text-lg sm:text-xl shadow-lg hover:border-cyan-400 cursor-pointer select-none transition-all active:scale-90 z-20 touch-manipulation';
+    el.className = 'orbit-node absolute flex items-center justify-center rounded-2xl bg-slate-900/90 border-2 border-indigo-500/80 text-white font-mono font-black text-lg sm:text-xl shadow-lg hover:border-cyan-400 cursor-pointer select-none transition-all active:scale-90 z-20 touch-manipulation';
     el.style.width = `${nodeSize}px`;
     el.style.height = `${nodeSize}px`;
     el.style.left = '50%';
     el.style.top = '50%';
     el.style.transform = 'translate(-50%, -50%)';
-    el.innerHTML = `<span>${node.number}</span>`;
+    el.innerHTML = `<span class="node-main-text">${node.number}</span>`;
 
     el.addEventListener('pointerdown', (e) => {
       e.preventDefault();
@@ -605,7 +605,7 @@ export class GameEngine {
 
   private renderNodeAppearance(node: OrbitNode, el: HTMLElement) {
     if (node.isBomb) {
-      el.className = 'absolute flex flex-col items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple cursor-pointer select-none z-20 touch-manipulation';
+      el.className = 'orbit-node absolute flex flex-col items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple cursor-pointer select-none z-20 touch-manipulation';
       el.innerHTML = `
         <div class="text-sm">💣</div>
         <div class="text-[8px] sm:text-[9px] font-mono font-bold text-purple-300">TRÁNH</div>
@@ -624,7 +624,7 @@ export class GameEngine {
       gestureBadge = '<span class="text-[7px] sm:text-[8px] text-amber-400 font-mono font-bold">GIỮ</span>';
     }
 
-    el.className = `absolute flex flex-col items-center justify-center rounded-2xl ${borderStyle} cursor-pointer select-none z-20 p-1 touch-manipulation`;
+    el.className = `orbit-node absolute flex flex-col items-center justify-center rounded-2xl ${borderStyle} cursor-pointer select-none z-20 p-1 touch-manipulation`;
 
     const mode = this.currentLevelConfig.targetMode || 'combined';
     let innerContent = '';
@@ -632,14 +632,14 @@ export class GameEngine {
     if (mode === 'math_only') {
       innerContent = `
         <div class="w-full h-full flex flex-col items-center justify-center">
-          <span class="font-mono text-base sm:text-lg font-black tracking-tight text-white leading-none">${node.number}</span>
+          <span class="node-main-text font-mono text-base sm:text-lg font-black tracking-tight text-white leading-none">${node.number}</span>
           ${gestureBadge ? `<div class="mt-0.5">${gestureBadge}</div>` : ''}
         </div>
       `;
     } else if (mode === 'vocab_only') {
       innerContent = `
         <div class="w-full h-full flex flex-col items-center justify-center px-1">
-          <span class="node-word-text text-[10px] sm:text-xs font-bold tracking-tight text-white max-w-[50px] sm:max-w-[62px] truncate text-center leading-tight">
+          <span class="node-main-text node-word-text text-[10px] sm:text-xs font-bold tracking-tight text-white max-w-[50px] sm:max-w-[62px] truncate text-center leading-tight">
             ${node.vocab ? node.vocab.en : ''}
           </span>
           ${gestureBadge ? `<div class="mt-0.5">${gestureBadge}</div>` : ''}
@@ -648,7 +648,7 @@ export class GameEngine {
     } else {
       innerContent = `
         <div class="w-full flex items-center justify-between px-1 -mt-0.5">
-          <span class="font-mono text-xs font-black tracking-tight text-white">${node.number}</span>
+          <span class="node-main-text font-mono text-xs font-black tracking-tight text-white">${node.number}</span>
           ${gestureBadge}
         </div>
         <div class="node-word-text text-[9px] font-semibold tracking-tight text-slate-200 max-w-[50px] sm:max-w-[56px] truncate text-center leading-none mt-0.5">
@@ -1167,11 +1167,11 @@ export class GameEngine {
     if (hintEl) {
       let gestureText = '1 Chạm';
       if (this.currentTargetGesture === 'double_tap') {
-        gestureText = 'Chạm Đúp (Đỏ)';
+        gestureText = 'Chạm Đúp';
       } else if (this.currentTargetGesture === 'hold') {
-        gestureText = 'Giữ/Kéo (Vàng)';
+        gestureText = 'Giữ/Kéo';
       }
-      hintEl.innerHTML = `Thao tác: <span class="text-cyan-300 font-bold">${gestureText}</span>`;
+      hintEl.innerText = gestureText;
     }
   }
 
