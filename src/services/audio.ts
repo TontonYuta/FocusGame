@@ -8,10 +8,6 @@ class SoundService {
   public isSoundEnabled: boolean = true;
   public isSpeechEnabled: boolean = true;
 
-  constructor() {
-    // AudioContext will be initialized on first user gesture
-  }
-
   private initContext() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -75,28 +71,6 @@ class SoundService {
     osc.stop(now + 0.23);
   }
 
-  public playDoubleTapFirst() {
-    if (!this.isSoundEnabled) return;
-    this.initContext();
-    if (!this.ctx) return;
-
-    const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(440, now);
-
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + 0.08);
-  }
-
   public playComboUp(combo: number) {
     if (!this.isSoundEnabled) return;
     this.initContext();
@@ -128,7 +102,6 @@ class SoundService {
     if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
-    // Sub-bass boom
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
@@ -207,7 +180,6 @@ class SoundService {
       utterance.rate = 0.95;
       utterance.pitch = 1.0;
 
-      // Select an English voice if available
       const voices = window.speechSynthesis.getVoices();
       const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
       if (enVoice) {

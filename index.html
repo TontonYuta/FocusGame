@@ -189,14 +189,7 @@
           </svg>
         </button>
 
-        <!-- Guide & Help -->
-        <button id="btnOpenGuide" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-amber-400 transition active:scale-95 shadow-sm" title="Hướng dẫn luật chơi">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-          </svg>
-        </button>
+
 
         <!-- Hidden legacy inputs for seamless compatibility -->
         <select id="headerCategorySelect" class="hidden">
@@ -228,146 +221,73 @@
   <main class="flex-1 flex flex-col relative w-full overflow-hidden">
 
     <!-- ---------------------------------------------------- -->
-    <!-- SCREEN 1: LEVEL SELECTION & GAME MODES -->
+    <!-- SCREEN 1: 2-STEP MODE & DIFFICULTY SELECTION -->
     <!-- ---------------------------------------------------- -->
-    <div id="screenLevelSelect" class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-between overflow-y-auto">
-      
-      <div>
-        <!-- Mode Switcher Segmented Control (Mobile Ergonomics) -->
-        <div class="mb-3 sm:mb-5">
-          <div class="grid grid-cols-3 p-1 bg-slate-900/90 border border-slate-800 rounded-2xl w-full text-center gap-1 shadow-inner">
-            <button id="tabCampaign" class="py-2 px-2 text-xs font-bold rounded-xl bg-cyan-500 text-slate-950 shadow-md transition active:scale-95 truncate">
-              ⚡ Chiến Dịch
+    <div id="screenLevelSelect" class="flex-1 max-w-xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center overflow-y-auto">
+      <div class="space-y-6 my-auto py-2">
+        
+        <!-- STEP 1: CHỌN CHẾ ĐỘ -->
+        <div>
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 mb-2.5">
+            1. Chế Độ Chơi
+          </div>
+          <div class="grid grid-cols-3 gap-2 sm:gap-3" id="modeSelectGrid">
+            <button type="button" data-mode="math" class="btn-mode-card selected flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-cyan-950/50 border-cyan-500 shadow-md glow-cyan cursor-pointer">
+              <span class="text-2xl sm:text-3xl mb-1.5">📐</span>
+              <span class="text-xs sm:text-sm font-bold text-white">Toán</span>
             </button>
-            <button id="tabSchulte" class="py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate">
-              🎯 Schulte 1→30
+            <button type="button" data-mode="vocab" class="btn-mode-card flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
+              <span class="text-2xl sm:text-3xl mb-1.5">📖</span>
+              <span class="text-xs sm:text-sm font-bold text-white">Tiếng Anh</span>
             </button>
-            <button id="tabCustom" class="py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate">
-              ⚙️ Tùy Chỉnh
+            <button type="button" data-mode="combined" class="btn-mode-card flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
+              <span class="text-2xl sm:text-3xl mb-1.5">⚡</span>
+              <span class="text-xs sm:text-sm font-bold text-white">Kết Hợp</span>
             </button>
           </div>
         </div>
 
-        <!-- CEFR Level Filter Pills Bar (Swipeable Horizontal Scroll) -->
-        <div id="cefrFilterContainer" class="mb-4">
-          <div class="flex items-center justify-between mb-1.5 px-0.5">
-            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">Cấp Độ Từ Vựng CEFR</span>
-            <span class="text-[11px] font-mono text-cyan-400">184 Từ Vựng</span>
+        <!-- STEP 2: CHỌN ĐỘ KHÓ -->
+        <div>
+          <div class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 mb-2.5">
+            2. Độ Khó
           </div>
-          <div id="cefrFilterBar" class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none select-none">
-            <button data-level="all" class="btnLevelFilter px-3 py-1.5 text-xs font-bold rounded-xl bg-cyan-500 text-slate-950 transition shrink-0 shadow-sm active:scale-95">
-              🌟 Tất Cả (7 Màn)
+          <div class="grid grid-cols-3 gap-2 sm:gap-3" id="diffSelectGrid">
+            <button type="button" data-diff="easy" class="btn-diff-card selected flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-emerald-950/50 border-emerald-500 shadow-md glow-cyan cursor-pointer">
+              <span class="text-xl sm:text-2xl mb-1.5">🟢</span>
+              <span class="text-xs sm:text-sm font-bold text-white">Dễ</span>
             </button>
-            <button data-level="A1" class="btnLevelFilter px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition shrink-0 active:scale-95">
-              🟢 A1 Căn Bản
+            <button type="button" data-diff="medium" class="btn-diff-card flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
+              <span class="text-xl sm:text-2xl mb-1.5">🟡</span>
+              <span class="text-xs sm:text-sm font-bold text-white">Trung Bình</span>
             </button>
-            <button data-level="A2" class="btnLevelFilter px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition shrink-0 active:scale-95">
-              🔵 A2 Sơ Cấp
-            </button>
-            <button data-level="B1" class="btnLevelFilter px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition shrink-0 active:scale-95">
-              🟣 B1 Trung Cấp
-            </button>
-            <button data-level="B2" class="btnLevelFilter px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition shrink-0 active:scale-95">
-              🟠 B2 Nâng Cao
-            </button>
-            <button data-level="C1" class="btnLevelFilter px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition shrink-0 active:scale-95">
-              🔴 C1 Học Thuật
+            <button type="button" data-diff="hard" class="btn-diff-card flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
+              <span class="text-xl sm:text-2xl mb-1.5">🔴</span>
+              <span class="text-xs sm:text-sm font-bold text-white">Khó</span>
             </button>
           </div>
         </div>
 
-        <!-- VIEW A: CAMPAIGN LEVEL GRID (7 Levels) -->
-        <div id="viewCampaign" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-          <!-- Dynamically populated via JS -->
-        </div>
-
-        <!-- VIEW B: SCHULTE CLASSIC 1->30 -->
-        <div id="viewSchulte" class="hidden flex-col items-center justify-center py-8 px-4 text-center bg-slate-900/60 border border-slate-800 rounded-3xl mb-6">
-          <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4 shadow-lg shadow-indigo-500/10">
-            <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-          </div>
-          <h3 class="text-xl sm:text-2xl font-black text-white mb-2">Schulte Classic: Vòng Xoáy 1 → 30</h3>
-          <p class="text-xs sm:text-sm text-slate-400 max-w-md mb-4 leading-relaxed">
-            30 con số quay trên 3 vòng tròn đồng tâm. Giữ mắt nhìn tâm và dùng thị giác ngoại vi chạm tuần tự từ 1 đến 30 trong thời gian nhanh nhất!
-          </p>
-          <div class="flex items-center gap-3 mb-6">
-            <div class="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono">
-              <span class="text-slate-400">Kỷ lục:</span>
-              <span id="schulteBestRecord" class="font-bold text-amber-400 ml-1">Chưa có</span>
-            </div>
-          </div>
-          <button id="btnStartSchulte" class="w-full max-w-xs py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-sm tracking-wide shadow-lg shadow-cyan-500/25 transition active:scale-95">
-            BẮT ĐẦU SCHULTE 1→30
+        <!-- PRIMARY CTA BUTTON: START GAME -->
+        <div class="pt-2">
+          <button id="btnStartGame" type="button" class="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-base sm:text-lg tracking-wide shadow-xl shadow-cyan-500/25 transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+            <span>BẮT ĐẦU CHƠI</span>
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </button>
         </div>
 
-        <!-- VIEW C: CUSTOM SANDBOX MODE -->
-        <div id="viewCustom" class="hidden flex-col bg-slate-900/70 border border-slate-800 rounded-3xl p-4 sm:p-6 mb-6">
-          <h3 class="text-lg font-bold text-white mb-1">Đấu Trường Tùy Chỉnh (Sandbox)</h3>
-          <p class="text-xs text-slate-400 mb-4">Tự do điều chỉnh số vòng, tốc độ xoay và chủ đề huấn luyện theo ý muốn.</p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-            <div>
-              <label class="block text-[11px] font-mono text-slate-400 mb-1">NỘI DUNG MỤC TIÊU</label>
-              <select id="customContent" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                <option value="combined">Kết Hợp (Toán & Từ Vựng)</option>
-                <option value="vocab_only">Từ Vựng Tiếng Anh Thuần Túy</option>
-                <option value="math_only">Tính Nhẩm Thuần Túy</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-mono text-slate-400 mb-1">SỐ VÒNG ĐỒNG TÂM</label>
-              <select id="customRings" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                <option value="1">1 Vòng (10 bóng)</option>
-                <option value="2" selected>2 Vòng (18 bóng)</option>
-                <option value="3">3 Vòng (28 bóng)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-mono text-slate-400 mb-1">TỐC ĐỘ XOAY</label>
-              <select id="customSpeed" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                <option value="slow">Chậm rãi (Dễ)</option>
-                <option value="normal" selected>Vừa phải (Chuẩn)</option>
-                <option value="fast">Nhanh (Thử thách)</option>
-                <option value="sinusoidal">Biến tốc lượn sóng</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-mono text-slate-400 mb-1">THAO TÁC CỬ CHỈ</label>
-              <select id="customActions" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                <option value="tap">1 Chạm đơn thuần</option>
-                <option value="tap_double">Chạm đơn & Chạm đúp (Đỏ)</option>
-                <option value="all" selected>Tất cả: Chạm, Đúp, Giữ kéo</option>
-                <option value="all_bomb">Toàn bộ + Cảnh giác Bom Tím</option>
-              </select>
-            </div>
-            <div class="sm:col-span-2">
-              <label class="block text-[11px] font-mono text-slate-400 mb-1">SỐ LƯỢNG MỤC TIÊU</label>
-              <select id="customTargetCount" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
-                <option value="10">10 Mục tiêu (Khởi động)</option>
-                <option value="15" selected>15 Mục tiêu (Tiêu chuẩn)</option>
-                <option value="25">25 Mục tiêu (Sức bền)</option>
-                <option value="40">40 Mục tiêu (Chuyên sâu)</option>
-              </select>
-            </div>
-          </div>
-
-          <button id="btnStartCustom" class="w-full py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm tracking-wide shadow-lg shadow-amber-400/20 transition active:scale-95">
-            KHỞI CHẠY ĐẤU TRƯỜNG TÙY CHỈNH
+        <!-- SECONDARY: SCHULTE CLASSIC -->
+        <div class="pt-2 border-t border-slate-800/80">
+          <button id="btnStartSchulte" type="button" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-between transition active:scale-95 cursor-pointer">
+            <span class="flex items-center gap-2">
+              <span>🎯</span>
+              <span>Luyện Thị Giác Ngoại Vi: Schulte 1→30</span>
+            </span>
+            <span class="text-cyan-400 font-mono text-sm">→</span>
           </button>
         </div>
+
       </div>
-
-      <!-- Footer Dev Mode & Info -->
-      <footer class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-slate-500 text-[11px]">
-        <div>FocusGame v2.0 · Linear & Apple HIG Edition</div>
-        <button id="btnDevUnlockAction" class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition active:scale-95">
-          🔓 Mở Khóa Tất Cả (Dev)
-        </button>
-      </footer>
     </div>
 
     <!-- ---------------------------------------------------- -->
@@ -611,47 +531,7 @@
     </div>
   </div>
 
-  <!-- MODAL: GAMEPLAY GUIDE -->
-  <div id="modalGuide" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <span>📖</span> Hướng Dẫn Luật Chơi & Cơ Chế
-        </h3>
-        <button id="btnCloseGuide" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95">
-          ✕
-        </button>
-      </div>
 
-      <div class="p-4 overflow-y-auto space-y-3.5 text-xs text-slate-300 leading-relaxed">
-        <div class="p-3 bg-slate-950/60 rounded-2xl border border-slate-800/80">
-          <h4 class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
-            <span>🎯</span> Nguyên Lý 4-trong-1
-          </h4>
-          <p>Tâm vòng xoay hiển thị phép tính hoặc nghĩa tiếng Việt. Bạn phải tính nhẩm và nhớ từ tiếng Anh trong đầu, sau đó tìm đúng quả bóng quay trên quỹ đạo để tương tác.</p>
-        </div>
-
-        <div class="p-3 bg-slate-950/60 rounded-2xl border border-slate-800/80">
-          <h4 class="font-bold text-amber-400 mb-1 flex items-center gap-1.5">
-            <span>👆</span> Thao Tác Cử Chỉ
-          </h4>
-          <ul class="space-y-1 text-slate-300">
-            <li>• <strong class="text-cyan-300">Bóng Xanh (1 Chạm):</strong> Chạm nhẹ 1 lần vào bóng.</li>
-            <li>• <strong class="text-rose-400">Bóng Đỏ (Chạm Đúp):</strong> Chạm nhanh 2 lần liên tiếp trong 350ms.</li>
-            <li>• <strong class="text-amber-400">Bóng Vàng (Giữ/Kéo):</strong> Nhấn giữ 400ms hoặc kéo thả thẳng vào Tâm.</li>
-            <li>• <strong class="text-purple-400">Bóng Tím (Bom):</strong> Tuyệt đối né tránh! Chạm vào bom sẽ bị trừ 5 giây.</li>
-          </ul>
-        </div>
-
-        <div class="p-3 bg-slate-950/60 rounded-2xl border border-slate-800/80">
-          <h4 class="font-bold text-emerald-400 mb-1 flex items-center gap-1.5">
-            <span>📚</span> Nấc Thang Cấp Độ CEFR
-          </h4>
-          <p>Từ vựng tăng dần độ khó khoa học từ <strong class="text-white">A1</strong> (Màn 2 & 3) qua <strong class="text-white">A2, B1, B2</strong> tới <strong class="text-white">C1</strong> (Trùm cuối Màn 7).</p>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- MODAL: PAUSE GAME -->
   <div id="modalPause" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
