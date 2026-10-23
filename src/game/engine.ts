@@ -1,4 +1,4 @@
-import { VocabItem, getRandomVocab, getVocabPoolByCategory } from '../data/vocabulary';
+import { VocabItem, getRandomVocab, getVocabPoolByCategory, getVocabPoolByLevel, CEFRLevel } from '../data/vocabulary';
 import { generateMathProblem, MathProblem } from '../services/mathGenerator';
 import { audio } from '../services/audio';
 import { storage } from '../services/storage';
@@ -38,6 +38,7 @@ export interface LevelConfig {
   targetCount: number;
   timeLimitSec: number;
   category: string;
+  cefrLevel?: CEFRLevel;
   baseSpeed: number; // rad/frame
   allowDoubleTap: boolean;
   allowHold: boolean;
@@ -52,29 +53,31 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 1,
     name: 'Màn 1: Khởi Động Tính Nhẩm',
-    subtitle: '1 Vòng quỹ đạo · Phép tính < 20 · Toán học thuần túy',
+    subtitle: '1 Vòng quỹ đạo · Phép tính < 20 · 1 chạm cơ bản',
     targetMode: 'math_only',
     rings: 1,
     nodeCount: 10,
     targetCount: 10,
     timeLimitSec: 60,
     category: 'a1',
-    baseSpeed: 0.004,
+    cefrLevel: 'A1',
+    baseSpeed: 0.0035,
     allowDoubleTap: false,
     allowHold: false,
     allowBomb: false
   },
   {
     id: 2,
-    name: 'Màn 2: Phản Xạ Từ Vựng A1',
-    subtitle: '1 Vòng quỹ đạo · Từ vựng A1 căn bản · Tiếng Anh thuần túy',
+    name: 'Màn 2: Từ Vựng Căn Bản A1',
+    subtitle: '1 Vòng quỹ đạo · 40 từ vựng quen thuộc · 1 chạm phản xạ',
     targetMode: 'vocab_only',
     rings: 1,
     nodeCount: 12,
     targetCount: 12,
     timeLimitSec: 65,
     category: 'a1',
-    baseSpeed: 0.0045,
+    cefrLevel: 'A1',
+    baseSpeed: 0.0038,
     allowDoubleTap: false,
     allowHold: false,
     allowBomb: false
@@ -82,29 +85,31 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 3,
     name: 'Màn 3: Nhị Nguyên Hợp Nhất',
-    subtitle: '2 Vòng ngược chiều · Kết hợp Toán & Anh A1 · Chạm đúp',
+    subtitle: '2 Vòng ngược chiều · Toán nhẩm & Từ vựng A1 · Chạm đúp',
     targetMode: 'combined',
     rings: 2,
-    nodeCount: 18,
-    targetCount: 15,
+    nodeCount: 16,
+    targetCount: 14,
     timeLimitSec: 75,
     category: 'a1',
-    baseSpeed: 0.005,
+    cefrLevel: 'A1',
+    baseSpeed: 0.0042,
     allowDoubleTap: true,
     allowHold: false,
     allowBomb: false
   },
   {
     id: 4,
-    name: 'Màn 4: Phản Xạ Đa Chiều',
-    subtitle: '2 Vòng biến tốc · Phép tính 2 bước · Giao tiếp Daily',
+    name: 'Màn 4: Phản Xạ Đa Chiều A2',
+    subtitle: '2 Vòng biến tốc · Phép tính 2 bước · Đời sống sơ cấp A2',
     targetMode: 'combined',
     rings: 2,
-    nodeCount: 22,
-    targetCount: 18,
+    nodeCount: 20,
+    targetCount: 16,
     timeLimitSec: 85,
-    category: 'daily',
-    baseSpeed: 0.005,
+    category: 'a2',
+    cefrLevel: 'A2',
+    baseSpeed: 0.0045,
     allowDoubleTap: true,
     allowHold: true,
     allowBomb: false,
@@ -112,15 +117,16 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   },
   {
     id: 5,
-    name: 'Màn 5: Cơn Lốc Đảo Chiều',
-    subtitle: '3 Vòng quay đảo chiều · TOEIC & Công sở · Cảnh giác bom tím',
+    name: 'Màn 5: Cơn Lốc Đảo Chiều B1',
+    subtitle: '3 Vòng quay đảo chiều · Xã hội trung cấp B1 · Né bom tím',
     targetMode: 'combined',
     rings: 3,
-    nodeCount: 28,
-    targetCount: 20,
+    nodeCount: 24,
+    targetCount: 18,
     timeLimitSec: 90,
-    category: 'toeic',
-    baseSpeed: 0.006,
+    category: 'b1',
+    cefrLevel: 'B1',
+    baseSpeed: 0.0048,
     allowDoubleTap: true,
     allowHold: true,
     allowBomb: true,
@@ -128,15 +134,16 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   },
   {
     id: 6,
-    name: 'Màn 6: Bóng Ma Nhấp Nháy',
-    subtitle: '3 Vòng nhấp nháy chữ · Toán tới 100 · IELTS Học thuật',
+    name: 'Màn 6: Bóng Ma Nhấp Nháy B2',
+    subtitle: '3 Vòng nhấp nháy chữ · Phép tính tới 100 · Công sở & TOEIC B2',
     targetMode: 'combined',
     rings: 3,
-    nodeCount: 30,
-    targetCount: 22,
+    nodeCount: 26,
+    targetCount: 20,
     timeLimitSec: 95,
-    category: 'academic',
-    baseSpeed: 0.006,
+    category: 'b2',
+    cefrLevel: 'B2',
+    baseSpeed: 0.005,
     allowDoubleTap: true,
     allowHold: true,
     allowBomb: true,
@@ -144,15 +151,16 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   },
   {
     id: 7,
-    name: 'Màn 7: Boss - Vòng Xoáy Vô Cực',
-    subtitle: 'Toán chuỗi kế thừa · Đảo chiều biến tốc · Công nghệ Tech',
+    name: 'Màn 7: Boss - Vòng Xoáy Vô Cực C1',
+    subtitle: 'Thử thách đỉnh cao · Toán chuỗi · Học thuật & Tech C1',
     targetMode: 'combined',
     rings: 3,
-    nodeCount: 30,
-    targetCount: 30,
-    timeLimitSec: 120,
-    category: 'tech',
-    baseSpeed: 0.007,
+    nodeCount: 28,
+    targetCount: 24,
+    timeLimitSec: 110,
+    category: 'c1',
+    cefrLevel: 'C1',
+    baseSpeed: 0.0055,
     allowDoubleTap: true,
     allowHold: true,
     allowBomb: true,
@@ -463,7 +471,9 @@ export class GameEngine {
       ];
     }
 
-    const vocabPool = getVocabPoolByCategory(config.category);
+    const vocabPool = config.cefrLevel
+      ? getVocabPoolByLevel(config.cefrLevel)
+      : getVocabPoolByCategory(config.category);
 
     let globalNodeIdx = 0;
     ringDistribution.forEach((countInRing, rIndex) => {
@@ -566,9 +576,9 @@ export class GameEngine {
     const el = document.createElement('div');
     el.id = node.id;
     const isMobile = (this.container.clientWidth || 360) < 480;
-    const nodeSize = isMobile ? 48 : 58;
+    const nodeSize = isMobile ? 46 : 54;
 
-    el.className = 'absolute flex flex-col items-center justify-center rounded-2xl select-none cursor-pointer transition-transform duration-100 active:scale-95 z-20 touch-manipulation';
+    el.className = 'orbit-node absolute flex flex-col items-center justify-center rounded-2xl select-none cursor-pointer transition-transform duration-100 active:scale-95 z-20 touch-manipulation';
     el.style.width = `${nodeSize}px`;
     el.style.height = `${nodeSize}px`;
     el.style.left = '50%';
@@ -628,6 +638,9 @@ export class GameEngine {
 
     const mode = this.currentLevelConfig.targetMode || 'combined';
     let innerContent = '';
+    const word = node.vocab ? node.vocab.en : '';
+    const wordSizeClass = word.length > 7 ? 'text-[9.5px] leading-tight' : 'text-[11px] sm:text-xs leading-tight';
+    const wordCombinedClass = word.length > 7 ? 'text-[8.5px] leading-none' : 'text-[9.5px] leading-none';
 
     if (mode === 'math_only') {
       innerContent = `
@@ -639,20 +652,20 @@ export class GameEngine {
     } else if (mode === 'vocab_only') {
       innerContent = `
         <div class="w-full h-full flex flex-col items-center justify-center px-1">
-          <span class="node-main-text node-word-text text-[10px] sm:text-xs font-bold tracking-tight text-white max-w-[50px] sm:max-w-[62px] truncate text-center leading-tight">
-            ${node.vocab ? node.vocab.en : ''}
+          <span class="node-main-text node-word-text ${wordSizeClass} font-bold tracking-tight text-white max-w-[54px] truncate text-center">
+            ${word}
           </span>
           ${gestureBadge ? `<div class="mt-0.5">${gestureBadge}</div>` : ''}
         </div>
       `;
     } else {
       innerContent = `
-        <div class="w-full flex items-center justify-between px-1 -mt-0.5">
-          <span class="node-main-text font-mono text-xs font-black tracking-tight text-white">${node.number}</span>
+        <div class="w-full flex items-center justify-between px-1.5 -mt-0.5">
+          <span class="node-main-text font-mono text-[11px] sm:text-xs font-black tracking-tight text-white">${node.number}</span>
           ${gestureBadge}
         </div>
-        <div class="node-word-text text-[9px] font-semibold tracking-tight text-slate-200 max-w-[50px] sm:max-w-[56px] truncate text-center leading-none mt-0.5">
-          ${node.vocab ? node.vocab.en : ''}
+        <div class="node-word-text ${wordCombinedClass} font-semibold tracking-tight text-slate-100 max-w-[54px] truncate text-center mt-0.5">
+          ${word}
         </div>
       `;
     }
@@ -946,7 +959,9 @@ export class GameEngine {
   private nextTargetPrompt() {
     const config = this.currentLevelConfig;
     const mode = config.targetMode || 'combined';
-    const pool = getVocabPoolByCategory(config.category);
+    const pool = config.cefrLevel
+      ? getVocabPoolByLevel(config.cefrLevel)
+      : getVocabPoolByCategory(config.category);
 
     // Common gesture setup
     let targetGesture: GestureType = 'tap';
@@ -1149,7 +1164,8 @@ export class GameEngine {
         mathEl.innerHTML = `<span class="text-base sm:text-xl md:text-2xl font-black text-amber-300 leading-tight">"${this.currentVocab.vi}"</span>`;
       }
       if (vocabEl) {
-        vocabEl.innerHTML = '<span class="text-[10px] sm:text-xs text-emerald-300 font-mono font-bold tracking-wider uppercase">TIẾNG ANH A1 CĂN BẢN</span>';
+        const cefr = this.currentLevelConfig.cefrLevel || 'A1';
+        vocabEl.innerHTML = `<span class="text-[9px] sm:text-[10px] text-emerald-300 font-mono font-bold tracking-wider uppercase">TIẾNG ANH ${cefr} CĂN BẢN</span>`;
       }
     } else {
       if (mathEl && this.currentMath) {
@@ -1166,7 +1182,7 @@ export class GameEngine {
       if (this.currentTargetGesture === 'double_tap') {
         gestureText = 'Chạm Đúp (Đỏ)';
       } else if (this.currentTargetGesture === 'hold') {
-        gestureText = 'Giữ/Kéo (Vàng)';
+        gestureText = 'Kéo vào Tâm (Vàng)';
       }
       hintEl.innerText = gestureText;
     }
@@ -1180,13 +1196,15 @@ export class GameEngine {
       const arenaRect = this.container.getBoundingClientRect();
       const centerX = arenaRect.width / 2;
       const centerY = arenaRect.height / 2;
-      const maxRadius = Math.min(centerX, centerY) * 0.92;
+      const arenaSize = Math.min(centerX, centerY) * 2;
       const isMobile = arenaRect.width < 480;
-      const hubRadius = (this.hubElement.offsetWidth / 2) || (isMobile ? 56 : 72);
-      const nodeRadius = isMobile ? 24 : 29;
-      const innerMargin = isMobile ? 10 : 18;
+      const hubElRect = this.hubElement.getBoundingClientRect();
+      const hubRadius = (hubElRect.width / 2) || (isMobile ? 48 : 64);
+      const nodeRadius = isMobile ? 23 : 27;
+      const innerMargin = isMobile ? 14 : 20;
       const minOrbit = hubRadius + nodeRadius + innerMargin;
-      const maxOrbit = Math.max(minOrbit + 20, maxRadius - nodeRadius - 4);
+      const maxRadius = Math.min(centerX, centerY) * 0.94;
+      const maxOrbit = Math.max(minOrbit + 26, maxRadius - nodeRadius - (isMobile ? 4 : 8));
 
       let ringRadii: number[] = [];
       const ringsCount = this.currentLevelConfig.rings;
@@ -1194,13 +1212,13 @@ export class GameEngine {
         ringRadii = [(minOrbit + maxOrbit) / 2];
       } else if (ringsCount === 2) {
         ringRadii = [
-          minOrbit + (maxOrbit - minOrbit) * 0.18,
+          minOrbit + (maxOrbit - minOrbit) * 0.2,
           maxOrbit
         ];
       } else {
         ringRadii = [
           minOrbit,
-          minOrbit + (maxOrbit - minOrbit) * 0.5,
+          minOrbit + (maxOrbit - minOrbit) * 0.52,
           maxOrbit
         ];
       }

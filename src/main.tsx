@@ -1,12 +1,13 @@
 import { CAMPAIGN_LEVELS, GameEngine, LevelConfig, MatchStats } from './game/engine';
 import { audio } from './services/audio';
 import { storage } from './services/storage';
-import { VOCABULARY_LIST, VocabItem, getVocabPoolByCategory } from './data/vocabulary';
+import { VOCABULARY_LIST, VocabItem, CEFRLevel, getVocabPoolByCategory, getVocabPoolByLevel } from './data/vocabulary';
 import { drawRadarChart } from './components/radarChart';
 
 // Global Engine Instance
 let engine: GameEngine;
 let currentNotebookFilter = 'all';
+let currentCampaignCefrFilter: 'all' | CEFRLevel = 'all';
 
 // DOM Element references
 const screenLevelSelect = document.getElementById('screenLevelSelect')!;
@@ -14,6 +15,7 @@ const screenGameArena = document.getElementById('screenGameArena')!;
 const viewCampaign = document.getElementById('viewCampaign')!;
 const viewSchulte = document.getElementById('viewSchulte')!;
 const viewCustom = document.getElementById('viewCustom')!;
+const cefrFilterContainer = document.getElementById('cefrFilterContainer');
 
 const tabCampaign = document.getElementById('tabCampaign')!;
 const tabSchulte = document.getElementById('tabSchulte')!;
@@ -30,6 +32,7 @@ const iconSoundOff = document.getElementById('iconSoundOff')!;
 const btnToggleSpeech = document.getElementById('btnToggleSpeech')!;
 const btnOpenGuide = document.getElementById('btnOpenGuide')!;
 const btnUnlockAll = document.getElementById('btnUnlockAll')!;
+const btnDevUnlockAction = document.getElementById('btnDevUnlockAction');
 const mobileCategorySelect = document.getElementById('mobileCategorySelect') as HTMLSelectElement | null;
 const btnUnlockAllMobile = document.getElementById('btnUnlockAllMobile') as HTMLButtonElement | null;
 
@@ -145,7 +148,7 @@ function init() {
 }
 
 /**
- * Render Level Selection Grid (Levels 1 to 6)
+ * Render Level Selection Grid (Levels 1 to 7)
  */
 function renderCampaignLevels() {
   viewCampaign.innerHTML = '';
@@ -153,19 +156,32 @@ function renderCampaignLevels() {
   const records = storage.getLevelRecords();
   const isDevAll = storage.getDevUnlockAll();
 
-  btnUnlockAll.innerText = isDevAll ? 'Đã Mở Khóa All' : 'Mở Khóa All';
-  btnUnlockAll.className = isDevAll
-    ? 'px-2 py-1 text-[11px] font-mono rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 font-bold hidden sm:block'
-    : 'px-2 py-1 text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 hover:text-white transition hidden sm:block';
-
-  if (btnUnlockAllMobile) {
-    btnUnlockAllMobile.innerText = isDevAll ? 'Đã Mở All' : 'Mở Khóa All';
-    btnUnlockAllMobile.className = isDevAll
-      ? 'px-2.5 py-1.5 text-[11px] font-mono rounded-lg bg-emerald-950 border border-emerald-600 text-emerald-300 font-bold sm:hidden'
-      : 'px-2.5 py-1.5 text-[11px] font-mono rounded-lg bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 font-semibold sm:hidden';
+  if (btnDevUnlockAction) {
+    btnDevUnlockAction.innerText = isDevAll ? '🔒 Khóa Lại (Dev)' : '🔓 Mở Khóa Tất Cả (Dev)';
   }
 
-  CAMPAIGN_LEVELS.forEach(lvl => {
+  const cefrBadgeMap: Record<string, { label: string; badgeClass: string }> = {
+    A1: { label: 'A1 Căn Bản', badgeClass: 'bg-emerald-950/80 border-emerald-600/80 text-emerald-300' },
+    A2: { label: 'A2 Sơ Cấp', badgeClass: 'bg-sky-950/80 border-sky-600/80 text-sky-300' },
+    B1: { label: 'B1 Trung Cấp', badgeClass: 'bg-indigo-950/80 border-indigo-600/80 text-indigo-300' },
+    B2: { label: 'B2 Nâng Cao', badgeClass: 'bg-amber-950/80 border-amber-600/80 text-amber-300' },
+    C1: { label: 'C1 Học Thuật', badgeClass: 'bg-rose-950/80 border-rose-600/80 text-rose-300' },
+  };
+
+  const filteredLevels = currentCampaignCefrFilter === 'all'
+    ? CAMPAIGN_LEVELS
+    : CAMPAIGN_LEVELS.filter(lvl => lvl.cefrLevel === currentCampaignCefrFilter);
+
+  if (filteredLevels.length === 0) {
+    viewCampaign.innerHTML = `
+      <div class="col-span-full py-12 text-center text-slate-500 text-xs">
+        Không có màn chơi nào trong cấp độ ${currentCampaignCefrFilter}.
+      </div>
+    `;
+    return;
+  }
+
+  filteredLevels.forEach(lvl => {
     const isUnlocked = isDevAll || unlocked.includes(lvl.id);
     const rec = records[lvl.id] || { stars: 0, highScore: 0, bestTimeSec: 0 };
 
@@ -173,7 +189,7 @@ function renderCampaignLevels() {
     card.id = `cardCampaignLevel-${lvl.id}`;
     card.className = `p-4 sm:p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
       isUnlocked
-        ? 'bg-slate-900/90 border-slate-700/80 hover:border-cyan-500/70 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer'
+        ? 'bg-slate-900/90 border-slate-700/80 hover:border-cyan-500/70 hover:shadow-lg hover:shadow-cyan-500/10 cursor-pointer active:scale-[0.99]'
         : 'bg-slate-950/60 border-slate-800/60 opacity-60 cursor-not-allowed'
     }`;
 
@@ -187,34 +203,27 @@ function renderCampaignLevels() {
       }
     }
 
-    // Badges
+    // Level CEFR Badge
+    const cefrInfo = cefrBadgeMap[lvl.cefrLevel || 'A1'];
+    let modeBadge = `<span class="px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold ${cefrInfo.badgeClass}">⚡ Toán + CEFR ${lvl.cefrLevel}</span>`;
+    if (lvl.targetMode === 'math_only') {
+      modeBadge = '<span class="px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-600/80 text-cyan-300 font-bold text-[10px] font-mono">📐 Toán Thuần Túy</span>';
+    } else if (lvl.targetMode === 'vocab_only') {
+      modeBadge = `<span class="px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold ${cefrInfo.badgeClass}">📖 Tiếng Anh ${lvl.cefrLevel}</span>`;
+    }
+
     const ringsBadge = `${lvl.rings} Vòng (${lvl.nodeCount} bóng)`;
     let gestureBadge = '1 Chạm';
     if (lvl.allowHold) gestureBadge = 'Chạm · Đúp · Giữ';
     else if (lvl.allowDoubleTap) gestureBadge = 'Chạm & Đúp';
 
-    let modeBadge = '<span class="px-2 py-0.5 rounded-md bg-indigo-950/80 border border-indigo-700/80 text-indigo-300 font-bold">Toán & Anh</span>';
-    if (lvl.targetMode === 'math_only') {
-      modeBadge = '<span class="px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-600/80 text-cyan-300 font-bold">Toán Thuần Túy</span>';
-    } else if (lvl.targetMode === 'vocab_only') {
-      modeBadge = '<span class="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/80 text-emerald-300 font-bold">Tiếng Anh A1</span>';
-    }
-
-    const catLabels: Record<string, string> = {
-      a1: 'Căn bản A1',
-      daily: 'Giao tiếp Daily',
-      toeic: 'TOEIC',
-      academic: 'IELTS',
-      tech: 'Tech'
-    };
-    const catTag = lvl.targetMode !== 'math_only' && catLabels[lvl.category]
-      ? `<span class="px-2 py-0.5 rounded-md bg-slate-800/90 border border-slate-700/80 text-amber-300 font-semibold">${catLabels[lvl.category]}</span>`
-      : '';
-
     card.innerHTML = `
       <div>
         <div class="flex items-center justify-between mb-2">
-          <span class="text-[11px] font-mono tracking-wider text-cyan-400 font-bold uppercase">MÀN 0${lvl.id}</span>
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono font-black text-xs flex items-center justify-center">0${lvl.id}</span>
+            <span class="text-[11px] font-mono tracking-wider text-cyan-400 font-bold uppercase">MÀN 0${lvl.id}</span>
+          </div>
           <div class="flex items-center gap-1">${starsHtml}</div>
         </div>
         <h4 class="font-patrick text-xl font-bold text-white mb-1 group-hover:text-cyan-300 transition">${lvl.name}</h4>
@@ -223,9 +232,9 @@ function renderCampaignLevels() {
         <!-- Mechanics tags -->
         <div class="flex items-center gap-1.5 flex-wrap text-[10px] font-mono text-slate-300 mb-4">
           ${modeBadge}
-          ${catTag}
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${ringsBadge}</span>
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${gestureBadge}</span>
+          <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${lvl.targetCount} Mục Tiêu</span>
           ${lvl.allowBomb ? '<span class="px-2 py-0.5 rounded-md bg-purple-950/80 border border-purple-800 text-purple-300">Bom Tím</span>' : ''}
           ${lvl.hasReversal ? '<span class="px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-800 text-cyan-300">Đảo Chiều</span>' : ''}
           ${lvl.hasMemoryBlink ? '<span class="px-2 py-0.5 rounded-md bg-amber-950/80 border border-amber-800 text-amber-300">Bóng Ma Chữ</span>' : ''}
@@ -238,7 +247,7 @@ function renderCampaignLevels() {
         </div>
         ${
           isUnlocked
-            ? `<button class="px-3.5 py-1 text-xs font-bold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-sm transition">Chơi Ngay</button>`
+            ? `<button class="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-sm transition active:scale-95">Chơi Ngay</button>`
             : `<div class="flex items-center gap-1 text-xs text-slate-500"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Khóa</div>`
         }
       </div>
@@ -445,10 +454,11 @@ function setupNavigationEvents() {
 
   // Tab switching in Level Select
   tabCampaign.addEventListener('click', () => {
-    tabCampaign.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-cyan-500 text-slate-950 shadow-sm transition';
-    tabSchulte.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
-    tabCustom.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
+    tabCampaign.className = 'py-2 px-2 text-xs font-bold rounded-xl bg-cyan-500 text-slate-950 shadow-md transition active:scale-95 truncate';
+    tabSchulte.className = 'py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate';
+    tabCustom.className = 'py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate';
 
+    cefrFilterContainer?.classList.remove('hidden');
     viewCampaign.classList.remove('hidden');
     viewCampaign.classList.add('grid');
     viewSchulte.classList.add('hidden');
@@ -458,10 +468,11 @@ function setupNavigationEvents() {
   });
 
   tabSchulte.addEventListener('click', () => {
-    tabSchulte.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-500 text-slate-950 shadow-sm transition';
-    tabCampaign.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
-    tabCustom.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
+    tabSchulte.className = 'py-2 px-2 text-xs font-bold rounded-xl bg-indigo-500 text-slate-950 shadow-md transition active:scale-95 truncate';
+    tabCampaign.className = 'py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate';
+    tabCustom.className = 'py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate';
 
+    cefrFilterContainer?.classList.add('hidden');
     viewCampaign.classList.add('hidden');
     viewCampaign.classList.remove('grid');
     viewSchulte.classList.remove('hidden');
@@ -471,16 +482,32 @@ function setupNavigationEvents() {
   });
 
   tabCustom.addEventListener('click', () => {
-    tabCustom.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-amber-400 text-slate-950 shadow-sm transition';
-    tabCampaign.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
-    tabSchulte.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition';
+    tabCustom.className = 'py-2 px-2 text-xs font-bold rounded-xl bg-amber-400 text-slate-950 shadow-md transition active:scale-95 truncate';
+    tabCampaign.className = 'py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate';
+    tabSchulte.className = 'py-2 px-2 text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition active:scale-95 truncate';
 
+    cefrFilterContainer?.classList.add('hidden');
     viewCampaign.classList.add('hidden');
     viewCampaign.classList.remove('grid');
     viewSchulte.classList.add('hidden');
     viewSchulte.classList.remove('flex');
     viewCustom.classList.remove('hidden');
     viewCustom.classList.add('flex');
+  });
+
+  // CEFR Level filter pills bar in Level Select
+  document.querySelectorAll('#cefrFilterBar .btnLevelFilter').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget as HTMLElement;
+      currentCampaignCefrFilter = (target.getAttribute('data-level') || 'all') as 'all' | CEFRLevel;
+
+      document.querySelectorAll('#cefrFilterBar .btnLevelFilter').forEach(b => {
+        b.className = 'btnLevelFilter px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition shrink-0 active:scale-95';
+      });
+      target.className = 'btnLevelFilter px-3 py-1.5 text-xs font-bold rounded-xl bg-cyan-500 text-slate-950 transition shrink-0 shadow-sm active:scale-95';
+
+      renderCampaignLevels();
+    });
   });
 
   // Global Category filter
@@ -495,6 +522,15 @@ function setupNavigationEvents() {
     renderCampaignLevels();
     audio.playCorrect();
   });
+
+  if (btnDevUnlockAction) {
+    btnDevUnlockAction.addEventListener('click', () => {
+      const isUnlocked = storage.getDevUnlockAll();
+      storage.setDevUnlockAll(!isUnlocked);
+      renderCampaignLevels();
+      audio.playCorrect();
+    });
+  }
 
   // Sound FX toggle
   btnToggleSound.addEventListener('click', () => {
@@ -651,10 +687,10 @@ function setupModalEvents() {
   document.querySelectorAll('.btnNotebookTab').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.btnNotebookTab').forEach(b => {
-        b.className = 'btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition';
+        b.className = 'btnNotebookTab px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition shrink-0 active:scale-95';
       });
       const target = e.currentTarget as HTMLElement;
-      target.className = 'btnNotebookTab px-3 py-1 text-xs font-medium rounded-lg bg-cyan-500 text-slate-950 font-bold transition';
+      target.className = 'btnNotebookTab px-2.5 py-1 text-xs font-bold rounded-lg bg-cyan-500 text-slate-950 transition shrink-0 active:scale-95';
       currentNotebookFilter = target.getAttribute('data-filter') || 'all';
       renderNotebookList();
     });
@@ -682,6 +718,8 @@ function renderNotebookList() {
     pool = VOCABULARY_LIST.filter(v => mistakes[v.en]);
   } else if (currentNotebookFilter === 'all') {
     pool = VOCABULARY_LIST;
+  } else if (['A1', 'A2', 'B1', 'B2', 'C1'].includes(currentNotebookFilter)) {
+    pool = getVocabPoolByLevel(currentNotebookFilter as CEFRLevel);
   } else {
     pool = getVocabPoolByCategory(currentNotebookFilter);
   }
@@ -703,6 +741,14 @@ function renderNotebookList() {
     return;
   }
 
+  const cefrColorMap: Record<string, string> = {
+    A1: 'bg-emerald-950/80 border-emerald-700/80 text-emerald-300',
+    A2: 'bg-sky-950/80 border-sky-700/80 text-sky-300',
+    B1: 'bg-indigo-950/80 border-indigo-700/80 text-indigo-300',
+    B2: 'bg-amber-950/80 border-amber-700/80 text-amber-300',
+    C1: 'bg-rose-950/80 border-rose-700/80 text-rose-300',
+  };
+
   pool.forEach(item => {
     const isMistake = !!mistakes[item.en];
     const row = document.createElement('div');
@@ -712,14 +758,14 @@ function renderNotebookList() {
 
     row.innerHTML = `
       <div class="flex items-center gap-3">
-        <button class="btnAudioNotebook w-8 h-8 rounded-lg bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 flex items-center justify-center text-slate-300 transition" title="Nghe phát âm">
+        <button class="btnAudioNotebook w-8 h-8 rounded-lg bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 flex items-center justify-center text-slate-300 transition active:scale-95 shrink-0" title="Nghe phát âm">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         </button>
         <div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <span class="font-bold text-sm font-mono ${isMistake ? 'text-rose-400' : 'text-cyan-400'}">${item.en}</span>
             <span class="text-[11px] text-slate-400 font-mono">${item.ipa}</span>
-            <span class="px-1.5 py-0.2 rounded bg-slate-800 text-[10px] uppercase font-mono text-slate-400">${item.cat}</span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold border ${cefrColorMap[item.level] || 'bg-slate-800 text-slate-400 border-slate-700'}">${item.level}</span>
           </div>
           <div class="text-slate-200 mt-0.5">${item.vi} · <span class="text-slate-400 italic text-[11px]">${item.hint}</span></div>
         </div>
