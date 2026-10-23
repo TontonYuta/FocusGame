@@ -60,6 +60,20 @@
     }
     
     /* Glow utilities */
+    .orbit-node {
+      will-change: transform;
+      contain: layout paint style;
+      transform-origin: center center;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    #nodesOrbitLayer {
+      will-change: contents;
+      contain: layout paint;
+    }
+    #arenaContainer {
+      contain: layout paint;
+    }
     .glow-cyan {
       box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
     }

@@ -13,20 +13,20 @@ export function calculateRingRadii(
   const isMobile = arenaRect.width < 480;
 
   const hubRect = hubElement.getBoundingClientRect();
-  const hubRadius = (hubRect.width / 2) || (isMobile ? 48 : 64);
-  const nodeRadius = isMobile ? 23 : 27;
-  const innerMargin = isMobile ? 14 : 20;
+  const hubRadius = (hubRect.width / 2) || (isMobile ? 52 : 64);
+  const nodeRadius = isMobile ? 22 : 26;
+  const innerMargin = isMobile ? 12 : 18;
 
   const minOrbit = hubRadius + nodeRadius + innerMargin;
   const maxRadius = Math.min(centerX, centerY) * 0.94;
-  const maxOrbit = Math.max(minOrbit + 26, maxRadius - nodeRadius - (isMobile ? 4 : 8));
+  const maxOrbit = Math.max(minOrbit + 24, maxRadius - nodeRadius - (isMobile ? 4 : 8));
 
   let ringRadii: number[] = [];
   if (ringsCount === 1) {
     ringRadii = [(minOrbit + maxOrbit) / 2];
   } else if (ringsCount === 2) {
     ringRadii = [
-      minOrbit + (maxOrbit - minOrbit) * 0.2,
+      minOrbit + (maxOrbit - minOrbit) * 0.22,
       maxOrbit
     ];
   } else {
@@ -63,7 +63,8 @@ export function syncOrbitGuides(ringRadii: number[]) {
 }
 
 /**
- * Moves nodes along their circular orbits and sets left/top style
+ * High-performance GPU-accelerated orbit physics loop.
+ * Uses translate3d for subpixel smooth motion and frame-rate independence.
  */
 export function updateNodePositions(
   nodes: OrbitNode[],
@@ -72,11 +73,14 @@ export function updateNodePositions(
   centerY: number,
   ringDirections: number[],
   baseSpeed: number,
-  speedFactor: number
+  speedFactor: number,
+  dtScale: number
 ) {
-  nodes.forEach(node => {
+  const count = nodes.length;
+  for (let i = 0; i < count; i++) {
+    const node = nodes[i];
     const ringDir = ringDirections[node.ringIndex] || 1;
-    const deltaAngle = ringDir * baseSpeed * speedFactor;
+    const deltaAngle = ringDir * baseSpeed * speedFactor * dtScale;
 
     node.angle = (node.angle + deltaAngle) % (2 * Math.PI);
 
@@ -85,8 +89,8 @@ export function updateNodePositions(
     const y = centerY + r * Math.sin(node.angle);
 
     if (node.domElement) {
-      node.domElement.style.left = `${x}px`;
-      node.domElement.style.top = `${y}px`;
+      // GPU accelerated composite layer update with subpixel precision
+      node.domElement.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
     }
-  });
+  }
 }

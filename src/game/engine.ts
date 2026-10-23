@@ -29,6 +29,10 @@ export class GameEngine {
   private nodes: OrbitNode[] = [];
   private ringDirs = [1, -1, 1];
   private frameCount = 0;
+  private lastFrameMs = 0;
+  private cachedRadii: number[] = [];
+  private cachedCenterX = 0;
+  private cachedCenterY = 0;
 
   public targetType: 'math' | 'vocab' | 'schulte' = 'math';
   public mathProblem: MathProblem | null = null;
@@ -52,60 +56,64 @@ export class GameEngine {
     this.hub = hub;
     this.onHud = onHud;
     this.onEnd = onEnd;
+    window.addEventListener('resize', () => { if (this.isRunning) this.updateDimensions(); });
+  }
+
+  public updateDimensions() {
+    const rect = this.arena.getBoundingClientRect();
+    const { ringRadii, centerX, centerY } = calculateRingRadii(this.config.rings, rect, this.hub);
+    this.cachedRadii = ringRadii;
+    this.cachedCenterX = centerX;
+    this.cachedCenterY = centerY;
+    syncOrbitGuides(ringRadii);
   }
 
   public startMatch(config: GameConfig) {
     this.stop();
     this.isSchulte = false;
     this.config = config;
-    this.targetsDone = 0;
-    this.score = 0;
-    this.combo = 1;
-    this.totalHits = 0;
-    this.correctHits = 0;
-    this.timeLeft = config.timeLimitSec;
-    this.wordsSeen.clear();
-    this.reactionTimes = [];
-    this.prevMathAnswer = 0;
-    this.frameCount = 0;
-    this.ringDirs = [1, -1, 1];
-
+    this.initMatchState(config.timeLimitSec);
     this.nodes = spawnOrbitNodes(config, this.nodesContainer, this.arena.clientWidth || 360, n => {
       evaluateHit(this, n, this.arena);
       this.updateHud();
     });
+    this.updateDimensions();
     this.nextPrompt();
-    this.isRunning = true;
-    this.startTimers();
-    this.loop();
-    this.updateHud();
+    this.startEngineLoop();
   }
 
   public startSchulte(schulteConfig: GameConfig) {
     this.stop();
     this.isSchulte = true;
     this.config = schulteConfig;
-    this.targetsDone = 0;
+    this.initMatchState(schulteConfig.timeLimitSec);
     this.schulteTarget = 1;
-    this.score = 0;
-    this.combo = 1;
-    this.totalHits = 0;
-    this.correctHits = 0;
-    this.timeLeft = schulteConfig.timeLimitSec;
-    this.reactionTimes = [];
     this.nodes = spawnSchulteOrbitNodes(this.nodesContainer, this.arena.clientWidth || 360, n => {
       evaluateSchulteHit(this, n);
       this.updateHud();
     });
+    this.updateDimensions();
     this.targetType = 'schulte';
+    this.startEngineLoop();
+  }
+
+  private initMatchState(timeSec: number) {
+    this.targetsDone = 0; this.score = 0; this.combo = 1;
+    this.totalHits = 0; this.correctHits = 0; this.timeLeft = timeSec;
+    this.wordsSeen.clear(); this.reactionTimes = [];
+    this.prevMathAnswer = 0; this.frameCount = 0; this.ringDirs = [1, -1, 1];
+  }
+
+  private startEngineLoop() {
     this.isRunning = true;
+    this.lastFrameMs = performance.now();
     this.startTimers();
-    this.loop();
+    this.loop(this.lastFrameMs);
     this.updateHud();
   }
 
   public pause() { this.isPaused = true; }
-  public resume() { this.isPaused = false; }
+  public resume() { this.isPaused = false; this.lastFrameMs = performance.now(); }
 
   public stop() {
     this.isRunning = false;
@@ -113,9 +121,7 @@ export class GameEngine {
     if (this.frameId) cancelAnimationFrame(this.frameId);
     if (this.tickTimer) clearInterval(this.tickTimer);
     if (this.reversalTimer) clearInterval(this.reversalTimer);
-    this.frameId = null;
-    this.tickTimer = null;
-    this.reversalTimer = null;
+    this.frameId = null; this.tickTimer = null; this.reversalTimer = null;
     this.nodesContainer.innerHTML = '';
     this.nodes = [];
   }
@@ -150,15 +156,15 @@ export class GameEngine {
     this.updateHud();
   }
 
-  private loop = () => {
+  private loop = (timestamp: number) => {
     if (!this.isRunning) return;
     if (!this.isPaused) {
       this.frameCount++;
-      const rect = this.arena.getBoundingClientRect();
-      const { ringRadii, centerX, centerY } = calculateRingRadii(this.config.rings, rect, this.hub);
-      if (this.frameCount % 30 === 0) syncOrbitGuides(ringRadii);
+      const dt = this.lastFrameMs ? Math.min(50, timestamp - this.lastFrameMs) : 16.666;
+      this.lastFrameMs = timestamp;
+      const dtScale = dt / 16.6667;
       const factor = this.config.hasSinusoidalSpeed ? 1.0 + 0.5 * Math.sin(this.frameCount * 0.02) : 1.0;
-      updateNodePositions(this.nodes, ringRadii, centerX, centerY, this.ringDirs, this.config.baseSpeed, factor);
+      updateNodePositions(this.nodes, this.cachedRadii, this.cachedCenterX, this.cachedCenterY, this.ringDirs, this.config.baseSpeed, factor, dtScale);
     }
     this.frameId = requestAnimationFrame(this.loop);
   };
