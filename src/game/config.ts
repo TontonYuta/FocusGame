@@ -1,5 +1,4 @@
-import { GameConfig, GameMode, Difficulty } from './types';
-import { CEFRLevel } from '../data/vocabulary';
+import { GameConfig, GameMode, Difficulty, CustomGameParams } from './types';
 
 export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfig {
   const modeLabels: Record<GameMode, string> = {
@@ -70,6 +69,42 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
     hasReversal: true,
     hasSinusoidalSpeed: true,
     isChainedMath: true
+  };
+}
+
+export function createCustomGameConfig(p: CustomGameParams): GameConfig {
+  const speeds: Record<string, number> = {
+    slow: 0.0028,
+    normal: 0.0042,
+    fast: 0.0060,
+    wave: 0.0044
+  };
+  const nodeCounts: Record<number, number> = { 1: 10, 2: 16, 3: 22 };
+  const timeLimit = Math.max(50, Math.round(p.targetCount * 4.5));
+
+  const modeLabels: Record<GameMode, string> = {
+    math: 'Toán',
+    vocab: `Tiếng Anh (${p.cefrLevel.toUpperCase()})`,
+    combined: 'Kết Hợp',
+    schulte: 'Schulte'
+  };
+
+  return {
+    id: 88,
+    mode: p.mode,
+    difficulty: 'medium',
+    name: `Tùy Chỉnh: ${modeLabels[p.mode]}`,
+    subtitle: `${p.targetCount} Mục tiêu · ${p.rings} Vòng · ${p.speed}`,
+    rings: p.rings,
+    nodeCount: nodeCounts[p.rings] || 16,
+    targetCount: p.targetCount,
+    timeLimitSec: timeLimit,
+    baseSpeed: speeds[p.speed] || 0.0042,
+    cefrLevel: p.cefrLevel,
+    allowBomb: p.allowBomb,
+    hasReversal: p.hasReversal,
+    hasSinusoidalSpeed: p.speed === 'wave',
+    isChainedMath: p.isChainedMath
   };
 }
 

@@ -1,9 +1,20 @@
 import { VocabItem, CEFRLevel } from '../data/vocabulary';
-import { MathProblem } from '../services/mathGenerator';
 
 export type GameMode = 'math' | 'vocab' | 'combined' | 'schulte';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type GestureType = 'tap' | 'bomb';
+export type SpeedPreset = 'slow' | 'normal' | 'fast' | 'wave';
+
+export interface CustomGameParams {
+  mode: GameMode;
+  rings: number;
+  speed: SpeedPreset;
+  targetCount: number;
+  cefrLevel: CEFRLevel | 'all';
+  allowBomb: boolean;
+  hasReversal: boolean;
+  isChainedMath: boolean;
+}
 
 export interface OrbitNode {
   id: string;
@@ -30,7 +41,7 @@ export interface GameConfig {
   targetCount: number;
   timeLimitSec: number;
   baseSpeed: number;
-  cefrLevel: CEFRLevel;
+  cefrLevel: CEFRLevel | 'all';
   allowBomb: boolean;
   hasReversal: boolean;
   hasSinusoidalSpeed?: boolean;

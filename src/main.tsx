@@ -2,6 +2,7 @@ import { GameEngine, getGameConfig, getSchulteConfig, GameMode, Difficulty, Game
 import { audio } from './services/audio';
 import { storage } from './services/storage';
 import { initModeSelect } from './ui/modeSelect';
+import { initCustomSelect } from './ui/customSelect';
 import { updateArenaHud } from './ui/arenaHud';
 import { initModalResults, showMatchResults } from './ui/modalResults';
 import { initModalNotebook } from './ui/modalNotebook';
@@ -71,6 +72,14 @@ function init() {
       activeConfig = getSchulteConfig();
       showScreen('arena');
       engine.startSchulte(activeConfig);
+    }
+  });
+
+  initCustomSelect({
+    onStartCustom: (customConfig: GameConfig) => {
+      activeConfig = customConfig;
+      showScreen('arena');
+      engine.startMatch(activeConfig);
     }
   });
 

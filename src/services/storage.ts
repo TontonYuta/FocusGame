@@ -159,6 +159,20 @@ class StorageService {
   public setGlobalCategory(cat: string): void {
     localStorage.setItem(STORAGE_KEYS.GLOBAL_CATEGORY, cat);
   }
+
+  public getCustomParams(): Record<string, unknown> {
+    try {
+      const data = localStorage.getItem('spinning_mind_custom_params');
+      if (data) return JSON.parse(data);
+    } catch {}
+    return {};
+  }
+
+  public saveCustomParams(params: unknown): void {
+    try {
+      localStorage.setItem('spinning_mind_custom_params', JSON.stringify(params));
+    } catch {}
+  }
 }
 
 export const storage = new StorageService();
