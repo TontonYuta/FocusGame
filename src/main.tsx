@@ -197,8 +197,19 @@ function renderCampaignLevels() {
     if (lvl.targetMode === 'math_only') {
       modeBadge = '<span class="px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-600/80 text-cyan-300 font-bold">Toán Thuần Túy</span>';
     } else if (lvl.targetMode === 'vocab_only') {
-      modeBadge = '<span class="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/80 text-emerald-300 font-bold">Tiếng Anh Thuần Túy</span>';
+      modeBadge = '<span class="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-600/80 text-emerald-300 font-bold">Tiếng Anh A1</span>';
     }
+
+    const catLabels: Record<string, string> = {
+      a1: 'Căn bản A1',
+      daily: 'Giao tiếp Daily',
+      toeic: 'TOEIC',
+      academic: 'IELTS',
+      tech: 'Tech'
+    };
+    const catTag = lvl.targetMode !== 'math_only' && catLabels[lvl.category]
+      ? `<span class="px-2 py-0.5 rounded-md bg-slate-800/90 border border-slate-700/80 text-amber-300 font-semibold">${catLabels[lvl.category]}</span>`
+      : '';
 
     card.innerHTML = `
       <div>
@@ -212,6 +223,7 @@ function renderCampaignLevels() {
         <!-- Mechanics tags -->
         <div class="flex items-center gap-1.5 flex-wrap text-[10px] font-mono text-slate-300 mb-4">
           ${modeBadge}
+          ${catTag}
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${ringsBadge}</span>
           <span class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80">${gestureBadge}</span>
           ${lvl.allowBomb ? '<span class="px-2 py-0.5 rounded-md bg-purple-950/80 border border-purple-800 text-purple-300">Bom Tím</span>' : ''}

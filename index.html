@@ -178,6 +178,7 @@
         <div class="relative hidden lg:block">
           <select id="headerCategorySelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 pr-7 appearance-none cursor-pointer focus:outline-none focus:border-cyan-500 transition">
             <option value="mixed">Chủ đề: Tổng hợp (Mix)</option>
+            <option value="a1">Chủ đề: Căn bản A1 (Beginner)</option>
             <option value="daily">Chủ đề: Giao tiếp (Daily)</option>
             <option value="toeic">Chủ đề: TOEIC & Công sở</option>
             <option value="academic">Chủ đề: IELTS & Học thuật</option>
@@ -285,6 +286,7 @@
         <div class="relative flex-1 max-w-[220px]">
           <select id="mobileCategorySelect" class="w-full bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 pr-7 appearance-none cursor-pointer focus:outline-none focus:border-cyan-500 transition">
             <option value="mixed">Chủ đề: Tổng hợp (Mix)</option>
+            <option value="a1">Chủ đề: Căn bản A1 (Beginner)</option>
             <option value="daily">Chủ đề: Giao tiếp (Daily)</option>
             <option value="toeic">Chủ đề: TOEIC & Công sở</option>
             <option value="academic">Chủ đề: IELTS & Học thuật</option>
@@ -475,11 +477,10 @@
             "Bền vững"
           </div>
 
-          <!-- Bottom Cue / Hint -->
-          <div class="mt-0.5 sm:mt-1 flex items-center justify-center gap-1 text-[8px] sm:text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded-full border border-slate-700/60 max-w-[110px] sm:max-w-none">
-            <span id="hubTargetFormula" class="text-cyan-300 font-bold truncate">19 · ?</span>
-            <span class="text-slate-500">·</span>
-            <span id="hubGestureHint" class="text-slate-300 font-semibold truncate">1 Chạm</span>
+          <!-- Bottom Cue / Hint (Chỉ hướng dẫn thao tác cử chỉ, tuyệt đối không lộ đáp án) -->
+          <div class="mt-0.5 sm:mt-1 flex items-center justify-center gap-1 text-[8px] sm:text-[10px] font-mono text-slate-300 bg-slate-800/90 px-2 py-0.5 rounded-full border border-slate-700/60 max-w-[120px] sm:max-w-none shadow-sm">
+            <span id="hubGestureHint" class="text-cyan-300 font-bold truncate">1 Chạm</span>
+            <span id="hubTargetFormula" class="hidden"></span>
           </div>
 
           <!-- Drop target aura (active when dragging amber node) -->

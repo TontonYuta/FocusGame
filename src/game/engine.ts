@@ -58,7 +58,7 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
     nodeCount: 10,
     targetCount: 10,
     timeLimitSec: 60,
-    category: 'daily',
+    category: 'a1',
     baseSpeed: 0.004,
     allowDoubleTap: false,
     allowHold: false,
@@ -66,14 +66,14 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   },
   {
     id: 2,
-    name: 'Màn 2: Phản Xạ Từ Vựng',
-    subtitle: '1 Vòng quỹ đạo · Từ vựng cơ bản · Tiếng Anh thuần túy',
+    name: 'Màn 2: Phản Xạ Từ Vựng A1',
+    subtitle: '1 Vòng quỹ đạo · Từ vựng A1 căn bản · Tiếng Anh thuần túy',
     targetMode: 'vocab_only',
     rings: 1,
     nodeCount: 12,
     targetCount: 12,
     timeLimitSec: 65,
-    category: 'daily',
+    category: 'a1',
     baseSpeed: 0.0045,
     allowDoubleTap: false,
     allowHold: false,
@@ -82,13 +82,13 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 3,
     name: 'Màn 3: Nhị Nguyên Hợp Nhất',
-    subtitle: '2 Vòng ngược chiều · Kết hợp Toán & Anh · Chạm đúp',
+    subtitle: '2 Vòng ngược chiều · Kết hợp Toán & Anh A1 · Chạm đúp',
     targetMode: 'combined',
     rings: 2,
     nodeCount: 18,
     targetCount: 15,
     timeLimitSec: 75,
-    category: 'toeic',
+    category: 'a1',
     baseSpeed: 0.005,
     allowDoubleTap: true,
     allowHold: false,
@@ -97,13 +97,13 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 4,
     name: 'Màn 4: Phản Xạ Đa Chiều',
-    subtitle: '2 Vòng biến tốc · Phép tính 2 bước · Nhấn giữ & Kéo',
+    subtitle: '2 Vòng biến tốc · Phép tính 2 bước · Giao tiếp Daily',
     targetMode: 'combined',
     rings: 2,
     nodeCount: 22,
     targetCount: 18,
     timeLimitSec: 85,
-    category: 'toeic',
+    category: 'daily',
     baseSpeed: 0.005,
     allowDoubleTap: true,
     allowHold: true,
@@ -113,13 +113,13 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 5,
     name: 'Màn 5: Cơn Lốc Đảo Chiều',
-    subtitle: '3 Vòng quay đảo chiều · IELTS · Cảnh giác bom tím',
+    subtitle: '3 Vòng quay đảo chiều · TOEIC & Công sở · Cảnh giác bom tím',
     targetMode: 'combined',
     rings: 3,
     nodeCount: 28,
     targetCount: 20,
     timeLimitSec: 90,
-    category: 'academic',
+    category: 'toeic',
     baseSpeed: 0.006,
     allowDoubleTap: true,
     allowHold: true,
@@ -129,13 +129,13 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 6,
     name: 'Màn 6: Bóng Ma Nhấp Nháy',
-    subtitle: '3 Vòng nhấp nháy chữ · Toán tới 100 · Công nghệ Tech',
+    subtitle: '3 Vòng nhấp nháy chữ · Toán tới 100 · IELTS Học thuật',
     targetMode: 'combined',
     rings: 3,
     nodeCount: 30,
     targetCount: 22,
     timeLimitSec: 95,
-    category: 'tech',
+    category: 'academic',
     baseSpeed: 0.006,
     allowDoubleTap: true,
     allowHold: true,
@@ -145,13 +145,13 @@ export const CAMPAIGN_LEVELS: LevelConfig[] = [
   {
     id: 7,
     name: 'Màn 7: Boss - Vòng Xoáy Vô Cực',
-    subtitle: 'Toán chuỗi kế thừa · Đảo chiều biến tốc · Thử thách đỉnh cao',
+    subtitle: 'Toán chuỗi kế thừa · Đảo chiều biến tốc · Công nghệ Tech',
     targetMode: 'combined',
     rings: 3,
     nodeCount: 30,
     targetCount: 30,
     timeLimitSec: 120,
-    category: 'mixed',
+    category: 'tech',
     baseSpeed: 0.007,
     allowDoubleTap: true,
     allowHold: true,
@@ -1131,6 +1131,12 @@ export class GameEngine {
     const formulaEl = document.getElementById('hubTargetFormula');
     const mode = this.currentLevelConfig.targetMode || 'combined';
 
+    // Bỏ hoàn toàn gợi ý đáp án để người chơi tự suy luận & tư duy
+    if (formulaEl) {
+      formulaEl.innerText = '';
+      formulaEl.classList.add('hidden');
+    }
+
     if (mode === 'math_only') {
       if (mathEl && this.currentMath) {
         mathEl.innerText = this.currentMath.expression;
@@ -1138,18 +1144,12 @@ export class GameEngine {
       if (vocabEl) {
         vocabEl.innerHTML = '<span class="text-[10px] sm:text-xs text-cyan-300 font-mono font-bold tracking-wider uppercase">TOÁN HỌC THUẦN TÚY</span>';
       }
-      if (formulaEl && this.currentMath) {
-        formulaEl.innerText = `= ${this.currentMath.result}`;
-      }
     } else if (mode === 'vocab_only') {
       if (mathEl && this.currentVocab) {
-        mathEl.innerHTML = `<span class="text-sm sm:text-lg md:text-xl font-black text-amber-300 leading-tight">"${this.currentVocab.vi}"</span>`;
+        mathEl.innerHTML = `<span class="text-base sm:text-xl md:text-2xl font-black text-amber-300 leading-tight">"${this.currentVocab.vi}"</span>`;
       }
       if (vocabEl) {
-        vocabEl.innerHTML = '<span class="text-[10px] sm:text-xs text-emerald-300 font-mono font-bold tracking-wider uppercase">TỪ VỰNG TIẾNG ANH</span>';
-      }
-      if (formulaEl && this.currentVocab) {
-        formulaEl.innerText = `${this.currentVocab.en}`;
+        vocabEl.innerHTML = '<span class="text-[10px] sm:text-xs text-emerald-300 font-mono font-bold tracking-wider uppercase">TIẾNG ANH A1 CĂN BẢN</span>';
       }
     } else {
       if (mathEl && this.currentMath) {
@@ -1158,18 +1158,15 @@ export class GameEngine {
       if (vocabEl && this.currentVocab) {
         vocabEl.innerText = `"${this.currentVocab.vi}"`;
       }
-      if (formulaEl && this.currentMath) {
-        formulaEl.innerText = `${this.currentMath.result} · ?`;
-      }
     }
 
-    // Gesture indicator in Central Hub
+    // Gesture indicator in Central Hub (chỉ dẫn hướng dẫn thao tác, không tiết lộ đáp án)
     if (hintEl) {
       let gestureText = '1 Chạm';
       if (this.currentTargetGesture === 'double_tap') {
-        gestureText = 'Chạm Đúp';
+        gestureText = 'Chạm Đúp (Đỏ)';
       } else if (this.currentTargetGesture === 'hold') {
-        gestureText = 'Giữ/Kéo';
+        gestureText = 'Giữ/Kéo (Vàng)';
       }
       hintEl.innerText = gestureText;
     }
