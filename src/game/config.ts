@@ -33,6 +33,7 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
       timeLimitSec: 25,
       baseSpeed: difficulty === 'easy' ? 0.0035 : difficulty === 'medium' ? 0.0045 : 0.0055,
       cefrLevel: difficulty === 'easy' ? 'A1' : difficulty === 'medium' ? 'A2' : 'B2',
+      mathLevel: difficulty === 'easy' ? 1 : difficulty === 'medium' ? 2 : 3,
       allowBomb: difficulty !== 'easy',
       hasReversal: difficulty !== 'easy',
       hasSinusoidalSpeed: difficulty === 'hard',
@@ -72,7 +73,7 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
       timeLimitSec: 65,
       baseSpeed: 0.0042,
       cefrLevel: 'A2',
-      mathLevel: 4,
+      mathLevel: 2,
       allowBomb: false,
       hasReversal: true
     };
@@ -91,7 +92,7 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
     timeLimitSec: 75,
     baseSpeed: 0.0055,
     cefrLevel: 'B2',
-    mathLevel: 8,
+    mathLevel: 3,
     allowBomb: true,
     hasReversal: true,
     hasSinusoidalSpeed: true,
@@ -129,7 +130,7 @@ export function createCustomGameConfig(p: CustomGameParams): GameConfig {
     timeLimitSec: timeLimit,
     baseSpeed: speeds[p.speed] || 0.0042,
     cefrLevel: p.cefrLevel,
-    mathLevel: p.mathLevel || 1,
+    mathLevel: p.mathLevel || 2,
     allowBomb: p.allowBomb,
     hasReversal: p.hasReversal,
     hasSinusoidalSpeed: p.speed === 'wave',
@@ -138,31 +139,14 @@ export function createCustomGameConfig(p: CustomGameParams): GameConfig {
 }
 
 export function getMathLevelConfig(level: number, diff: Difficulty = 'medium'): GameConfig {
-  const safeLevel = Math.max(1, Math.min(10, Math.round(level || 1)));
+  const safeLevel = Math.max(1, Math.min(3, Math.round(level || 1)));
+  const mappedDiff: Difficulty = safeLevel === 1 ? 'easy' : safeLevel === 2 ? 'medium' : 'hard';
+  const cfg = getGameConfig('math', diff || mappedDiff);
+  cfg.mathLevel = safeLevel;
   const meta = MATH_LEVELS_META[safeLevel - 1] || MATH_LEVELS_META[0];
-
-  const ringCount = safeLevel <= 3 ? 1 : safeLevel <= 7 ? 2 : 3;
-  const nodeCount = safeLevel <= 3 ? 10 : safeLevel <= 7 ? 16 : 22;
-  const baseSpeed = 0.0030 + safeLevel * 0.0003;
-
-  return {
-    id: safeLevel,
-    mode: 'math',
-    difficulty: diff,
-    name: `Toán Cấp ${safeLevel}: ${meta.name}`,
-    subtitle: `${meta.description} · ${meta.category}`,
-    rings: ringCount,
-    nodeCount,
-    targetCount: 15,
-    timeLimitSec: 60 + safeLevel * 3,
-    baseSpeed,
-    cefrLevel: 'A1',
-    mathLevel: safeLevel,
-    allowBomb: safeLevel >= 6,
-    hasReversal: safeLevel >= 4,
-    hasSinusoidalSpeed: safeLevel >= 8,
-    isChainedMath: false
-  };
+  cfg.name = `Toán Cấp ${safeLevel}: ${meta.name}`;
+  cfg.subtitle = `${meta.description} · ${meta.category}`;
+  return cfg;
 }
 
 export function getSchulteConfig(): GameConfig {

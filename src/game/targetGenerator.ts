@@ -37,19 +37,7 @@ export function generateNextTarget(
   let newPrevAnswer = previousMathAnswer;
 
   if (turnType === 'math') {
-    let activeLevel = config.mathLevel || 1;
-    if (!config.mathLevel) {
-      if (config.mode === 'survival') {
-        activeLevel = Math.floor(Math.random() * 4) + 7;
-      } else if (config.difficulty === 'easy') {
-        activeLevel = Math.floor(Math.random() * 3) + 1;
-      } else if (config.difficulty === 'medium') {
-        activeLevel = Math.floor(Math.random() * 3) + 4;
-      } else {
-        activeLevel = Math.floor(Math.random() * 4) + 7;
-      }
-    }
-
+    const activeLevel = config.mathLevel || (config.difficulty === 'easy' ? 1 : config.difficulty === 'medium' ? 2 : 3);
     const mathProblem = generateMathProblem(
       activeLevel,
       config.isChainedMath ? previousMathAnswer : undefined

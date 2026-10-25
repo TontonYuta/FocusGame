@@ -2,6 +2,7 @@ import { OrbitNode } from './types';
 
 /**
  * Calculates responsive concentric orbit radii for given ring count.
+ * Prevents node clipping at mobile screen edges and prevents overlap with central hub.
  */
 export function calculateRingRadii(
   ringsCount: number,
@@ -13,14 +14,18 @@ export function calculateRingRadii(
   const isMobile = arenaRect.width < 480;
   const isSmallMobile = arenaRect.width < 380;
 
+  // Real central hub radius with responsive fallback
   const hubRect = hubElement.getBoundingClientRect();
-  const hubRadius = (hubRect.width / 2) || (isSmallMobile ? 46 : isMobile ? 52 : 64);
-  const nodeRadius = isSmallMobile ? 20 : isMobile ? 22 : 26;
-  const innerMargin = isSmallMobile ? 10 : isMobile ? 14 : 18;
+  const hubRadius = (hubRect.width > 0 ? hubRect.width / 2 : 0) || (isSmallMobile ? 40 : isMobile ? 44 : 56);
 
-  const minOrbit = hubRadius + nodeRadius + innerMargin;
-  const maxRadius = Math.min(centerX, centerY) * 0.95;
-  const maxOrbit = Math.max(minOrbit + 26, maxRadius - nodeRadius - (isSmallMobile ? 2 : isMobile ? 4 : 8));
+  // Maximum node half-width to prevent clipping at left/right edges (especially for vocab word pills)
+  // Max word pill width is ~84px on mobile, so half-width is 42px + 10px screen edge margin = 52px
+  const maxNodeHalfWidth = isSmallMobile ? 44 : isMobile ? 48 : 56;
+  const innerMargin = isSmallMobile ? 12 : isMobile ? 16 : 22;
+
+  const minOrbit = hubRadius + maxNodeHalfWidth * 0.5 + innerMargin;
+  const maxRadius = Math.min(centerX, centerY);
+  const maxOrbit = Math.max(minOrbit + 30, maxRadius - maxNodeHalfWidth - (isSmallMobile ? 4 : isMobile ? 8 : 14));
 
   let ringRadii: number[] = [];
   if (ringsCount === 1) {
@@ -90,7 +95,7 @@ export function updateNodePositions(
     const y = centerY + r * Math.sin(node.angle);
 
     if (node.domElement) {
-      // GPU accelerated composite layer update with subpixel precision
+      // GPU accelerated composite layer update with zero transition delay
       node.domElement.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
     }
   }

@@ -7,14 +7,17 @@ export function createNodeDom(
 ): HTMLElement {
   const el = document.createElement('div');
   el.id = node.id;
-  el.className = 'orbit-node absolute flex items-center justify-center select-none cursor-pointer z-20 touch-manipulation active:scale-90 active:brightness-125 transition-transform duration-75';
+  // NOTE: Outer element handles 60/120fps RAF physics positioning with ZERO transition to prevent jank.
+  el.className = 'orbit-node absolute pointer-events-auto select-none cursor-pointer z-20 touch-none';
   el.style.left = '0px';
   el.style.top = '0px';
+  el.style.transition = 'none';
   el.style.willChange = 'transform';
   el.style.transform = 'translate3d(0px, 0px, 0) translate(-50%, -50%)';
 
   el.addEventListener('pointerdown', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     onPointerDown(node);
   });
 
@@ -27,30 +30,28 @@ export function renderNodeAppearance(
   currentTargetType: 'math' | 'vocab' | 'schulte'
 ) {
   if (node.isBomb) {
-    el.style.width = '44px';
-    el.style.height = '44px';
-    el.style.minWidth = '';
-    el.style.maxWidth = '';
-    el.style.padding = '0';
-    el.className = 'orbit-node absolute flex items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple cursor-pointer select-none z-20 touch-manipulation active:scale-90 active:brightness-125 transition-transform duration-75';
-    el.innerHTML = '<span class="text-base sm:text-xl">💣</span>';
+    el.style.width = '42px';
+    el.style.height = '42px';
+    el.innerHTML = `
+      <div class="node-inner w-full h-full flex items-center justify-center rounded-2xl bg-purple-950/90 border-2 border-purple-500 text-purple-200 shadow-lg glow-purple active:scale-85 active:brightness-125 transition-transform duration-75">
+        <span class="text-base sm:text-lg select-none">💣</span>
+      </div>`;
     return;
   }
 
   if (currentTargetType === 'math') {
     el.style.width = '46px';
     el.style.height = '46px';
-    el.style.minWidth = '';
-    el.style.maxWidth = '';
-    el.style.padding = '0';
-    el.className = 'orbit-node absolute flex items-center justify-center rounded-2xl border-2 border-cyan-500/80 bg-slate-900/95 text-slate-100 shadow-md glow-cyan hover:border-cyan-400 cursor-pointer select-none z-20 touch-manipulation active:scale-90 active:brightness-125 transition-transform duration-75';
-    el.innerHTML = `<span class="node-main-text font-mono text-base sm:text-lg font-black tracking-tight text-white leading-none">${node.number}</span>`;
+    el.innerHTML = `
+      <div class="node-inner w-full h-full flex items-center justify-center rounded-2xl border-2 border-cyan-500/80 bg-slate-900/95 text-slate-100 shadow-md glow-cyan active:scale-85 active:border-cyan-300 active:brightness-125 transition-transform duration-75">
+        <span class="font-mono text-base sm:text-lg font-black tracking-tight text-white leading-none select-none">${node.number}</span>
+      </div>`;
   } else {
-    // Vocab word node: adaptive pill width, responsive font size, NO truncation!
+    // Vocab word node: adaptive pill width, responsive font size, no truncation
     const word = node.vocab ? node.vocab.en : '';
     const len = word.length;
     const fontClass = len >= 11
-      ? 'text-[8.5px] sm:text-[9.5px]'
+      ? 'text-[9px] sm:text-[10px]'
       : len >= 8
         ? 'text-[10px] sm:text-[11px]'
         : len >= 5
@@ -58,12 +59,11 @@ export function renderNodeAppearance(
           : 'text-xs sm:text-sm';
 
     el.style.width = 'auto';
-    el.style.height = '40px';
-    el.style.minWidth = '52px';
-    el.style.maxWidth = '112px';
-    el.style.padding = '0 10px';
-    el.className = 'orbit-node absolute flex items-center justify-center rounded-full border-2 border-cyan-500/80 bg-slate-900/95 text-slate-100 shadow-md glow-cyan hover:border-cyan-400 cursor-pointer select-none z-20 touch-manipulation active:scale-90 active:brightness-125 transition-transform duration-75';
-    el.innerHTML = `<span class="node-main-text node-word-text ${fontClass} font-bold tracking-tight text-white whitespace-nowrap text-center leading-none">${word}</span>`;
+    el.style.height = '38px';
+    el.innerHTML = `
+      <div class="node-inner w-full h-full flex items-center justify-center px-2.5 sm:px-3 rounded-full border-2 border-cyan-500/80 bg-slate-900/95 text-slate-100 shadow-md glow-cyan active:scale-85 active:border-cyan-300 active:brightness-125 transition-transform duration-75 min-w-[50px] max-w-[94px] sm:max-w-[115px]">
+        <span class="${fontClass} font-bold tracking-tight text-white whitespace-nowrap text-center leading-none truncate select-none">${word}</span>
+      </div>`;
   }
 }
 
@@ -74,17 +74,22 @@ export function createSchulteNodeDom(
 ): HTMLElement {
   const el = document.createElement('div');
   el.id = node.id;
-  el.className = 'orbit-node absolute flex items-center justify-center rounded-2xl bg-slate-900/90 border-2 border-indigo-500/80 text-white font-mono font-black text-lg sm:text-xl shadow-lg hover:border-cyan-400 cursor-pointer select-none z-20 touch-manipulation active:scale-90 active:brightness-125 transition-transform duration-75';
+  el.className = 'orbit-node absolute pointer-events-auto select-none cursor-pointer z-20 touch-none';
   el.style.width = '46px';
   el.style.height = '46px';
   el.style.left = '0px';
   el.style.top = '0px';
+  el.style.transition = 'none';
   el.style.willChange = 'transform';
   el.style.transform = 'translate3d(0px, 0px, 0) translate(-50%, -50%)';
-  el.innerHTML = `<span class="node-main-text">${node.number}</span>`;
+  el.innerHTML = `
+    <div class="schulte-inner w-full h-full flex items-center justify-center rounded-2xl bg-slate-900/90 border-2 border-indigo-500/80 text-white font-mono font-black text-lg sm:text-xl shadow-lg active:scale-85 active:border-cyan-300 transition-transform duration-75">
+      <span class="select-none">${node.number}</span>
+    </div>`;
 
   el.addEventListener('pointerdown', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     onPointerDown(node);
   });
 

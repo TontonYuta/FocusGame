@@ -86,20 +86,18 @@ function init() {
   );
 
   initModeSelect({
-    onStartMatch: (mode: GameMode, diff: Difficulty, mathLevel?: number) => {
-      let cfg: GameConfig;
-      if (mode === 'math' && mathLevel) {
-        cfg = getMathLevelConfig(mathLevel, diff);
-      } else {
-        cfg = getGameConfig(mode, diff);
-        if (mathLevel) cfg.mathLevel = mathLevel;
-      }
+    onStartMatch: (mode: GameMode, diff: Difficulty) => {
+      const cfg = getGameConfig(mode, diff);
       launchMatch(cfg);
     },
     onStartSchulte: () => {
       activeConfig = getSchulteConfig();
       showScreen('arena');
       engine.startSchulte(activeConfig);
+    },
+    onStartSurvival: () => {
+      const cfg = getGameConfig('survival', 'medium');
+      launchMatch(cfg);
     }
   });
 

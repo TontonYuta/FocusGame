@@ -84,6 +84,13 @@
       transform-origin: center center;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      transition: none !important;
+    }
+    .node-inner, .schulte-inner {
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      touch-action: manipulation;
     }
     #nodesOrbitLayer {
       will-change: contents;
@@ -310,15 +317,17 @@
         </div>
 
         <!-- PANEL 1: CHƠI NHANH (2-STEP QUICK FLOW) -->
-        <div id="panelQuickPlay" class="space-y-5">
-          <!-- STEP 1: CHỌN CHẾ ĐỘ -->
+        <div id="panelQuickPlay" class="space-y-4">
+          <!-- STEP 1: CHỌN CHẾ ĐỘ (3 Chế Độ Cốt Lõi) -->
           <div>
-            <div class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 mb-2">
-              1. Chế Độ Chơi
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 mb-2 flex items-center justify-between">
+              <span>1. Chế Độ Chơi</span>
+              <span class="text-[10px] text-slate-400 font-normal">3 chế độ cốt lõi</span>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5" id="modeSelectGrid">
-              <button type="button" data-mode="math" class="btn-mode-card selected flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-cyan-950/50 border-cyan-500 shadow-md glow-cyan cursor-pointer group">
-                <div class="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
+            <div class="grid grid-cols-3 gap-2 sm:gap-3" id="modeSelectGrid">
+              <!-- TOÁN HỌC -->
+              <button type="button" data-mode="math" class="btn-mode-card selected flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-cyan-950/50 border-cyan-500 shadow-md glow-cyan cursor-pointer group">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-105 transition">
                   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="4" y1="12" x2="20" y2="12"></line>
                     <line x1="12" y1="4" x2="12" y2="20"></line>
@@ -326,10 +335,12 @@
                     <circle cx="6" cy="18" r="1.5" fill="currentColor"></circle>
                   </svg>
                 </div>
-                <span class="text-xs sm:text-sm font-bold text-white">Toán</span>
+                <span class="text-xs sm:text-sm font-bold text-white">Toán Học</span>
+                <span class="text-[9px] text-cyan-300/80 mt-0.5">Tính nhẩm</span>
               </button>
-              <button type="button" data-mode="vocab" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
+              <!-- TIẾNG ANH -->
+              <button type="button" data-mode="vocab" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-105 transition">
                   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
                     <path d="M6 6h10"></path>
@@ -337,80 +348,56 @@
                   </svg>
                 </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Tiếng Anh</span>
+                <span class="text-[9px] text-amber-300/80 mt-0.5">Từ vựng CEFR</span>
               </button>
-              <button type="button" data-mode="combined" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
-                <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
+              <!-- KẾT HỢP -->
+              <button type="button" data-mode="combined" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-105 transition">
                   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                   </svg>
                 </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Kết Hợp</span>
-              </button>
-              <button type="button" data-mode="survival" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
-                <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
-                  </svg>
-                </div>
-                <span class="text-xs sm:text-sm font-bold text-rose-400">Sinh Tồn</span>
+                <span class="text-[9px] text-indigo-300/80 mt-0.5">Đa nhiệm</span>
               </button>
             </div>
           </div>
 
-          <!-- STEP 2: CHỌN ĐỘ KHÓ -->
+          <!-- STEP 2: CHỌN ĐỘ KHÓ (3 Cấp Độ) -->
           <div>
-            <div class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 mb-2">
-              2. Độ Khó
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 mb-2 flex items-center justify-between">
+              <span>2. Độ Khó</span>
+              <span id="labelDiffSummary" class="text-[10px] text-emerald-300 font-semibold">1 Vòng · 10 Mục tiêu · Êm dịu</span>
             </div>
             <div class="grid grid-cols-3 gap-2 sm:gap-3" id="diffSelectGrid">
               <button type="button" data-diff="easy" class="btn-diff-card selected flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-emerald-950/50 border-emerald-500 shadow-md glow-cyan cursor-pointer group">
-                <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-1">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-1">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <path d="m9 12 2 2 4-4"></path>
                   </svg>
                 </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Dễ</span>
+                <span class="text-[9px] text-emerald-300/80 mt-0.5">1 Vòng · Êm</span>
               </button>
               <button type="button" data-diff="medium" class="btn-diff-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
-                <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mb-1">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mb-1">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
                   </svg>
                 </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Trung Bình</span>
+                <span class="text-[9px] text-amber-300/80 mt-0.5">2 Vòng · Chuẩn</span>
               </button>
               <button type="button" data-diff="hard" class="btn-diff-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
-                <div class="w-7 h-7 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center mb-1">
+                <div class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center mb-1">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                   </svg>
                 </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Khó</span>
+                <span class="text-[9px] text-rose-300/80 mt-0.5">3 Vòng · Bom</span>
               </button>
-            </div>
-          </div>
-
-          <!-- STEP 2B: 10 CẤP ĐỘ TOÁN HỌC (Khi chọn chế độ Toán) -->
-          <div id="containerMathLevelSelect" class="space-y-2 p-3 bg-slate-900/60 rounded-2xl border border-slate-800/80">
-            <div class="flex items-center justify-between">
-              <div class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
-                <span>📐</span> 10 Cấp Độ Toán Học
-              </div>
-              <span id="labelCurrentMathLevelDesc" class="text-[11px] text-amber-300 font-semibold truncate max-w-[210px]">L1: Cộng Trừ Cơ Bản</span>
-            </div>
-            
-            <div class="grid grid-cols-5 gap-1.5 sm:gap-2" id="gridMathLevels">
-              <button type="button" data-mathlevel="1" class="btn-math-level selected py-2 px-1 text-center rounded-xl border border-cyan-500 bg-cyan-950/60 text-white font-bold text-xs transition active:scale-95 shadow-sm glow-cyan cursor-pointer" title="Cộng Trừ Cơ Bản (Số học)">L1</button>
-              <button type="button" data-mathlevel="2" class="btn-math-level py-2 px-1 text-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer" title="Nhân Chia & Ngoặc">L2</button>
-              <button type="button" data-mathlevel="3" class="btn-math-level py-2 px-1 text-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer" title="Tìm Ẩn Số x (Đại số)">L3</button>
-              <button type="button" data-mathlevel="4" class="btn-math-level py-2 px-1 text-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer" title="Lũy Thừa & Căn Số">L4</button>
-              <button type="button" data-mathlevel="5" class="btn-math-level py-2 px-1 text-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer" title="Giai Thừa n! & Modulo">L5</button>
-              <button type="button" data-mathlevel="6" class="btn-math-level py-2 px-1 text-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer" title="Logarit Tự Nhiên">L6</button>
-              <button type="button" data-mathlevel="7" class="btn-math-level py-2 px-1 text-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-bold text-xs transition active:scale-95 cursor-pointer" title="Lượng Giác Góc Vàng">L7</button>
-              <button type="button" data-mathlevel="8" class="btn-math-level py-2 px-1 text-center rounded-xl border border-rose-900/60 bg-slate-900 text-rose-400 hover:text-rose-200 font-bold text-xs transition active:scale-95 cursor-pointer" title="Đạo Hàm Tại Điểm f'(x)">L8 🔥</button>
-              <button type="button" data-mathlevel="9" class="btn-math-level py-2 px-1 text-center rounded-xl border border-amber-900/60 bg-slate-900 text-amber-400 hover:text-amber-200 font-bold text-xs transition active:scale-95 cursor-pointer" title="Tích Phân Xác Định ∫dx">L9 ⚡</button>
-              <button type="button" data-mathlevel="10" class="btn-math-level py-2 px-1 text-center rounded-xl border border-indigo-900/60 bg-slate-900 text-indigo-400 hover:text-indigo-200 font-bold text-xs transition active:scale-95 cursor-pointer" title="Giải Tích Tối Thượng (Đạo hàm cấp 2, hàm hợp)">L10 👑</button>
             </div>
           </div>
 
@@ -437,10 +424,11 @@
             </button>
           </div>
 
-          <!-- SECONDARY: SCHULTE CLASSIC -->
-          <div class="pt-2 border-t border-slate-800/80">
-            <button id="btnStartSchulte" type="button" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-between transition active:scale-95 cursor-pointer group">
-              <span class="flex items-center gap-2.5">
+          <!-- SECONDARY CHALLENGES: SCHULTE & SINH TỒN -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-800/80">
+            <!-- SCHULTE -->
+            <button id="btnStartSchulte" type="button" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-between transition active:scale-95 cursor-pointer group">
+              <span class="flex items-center gap-2">
                 <span class="w-6 h-6 rounded-lg bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="9"></circle>
@@ -451,9 +439,22 @@
                     <line x1="17" y1="12" x2="21" y2="12"></line>
                   </svg>
                 </span>
-                <span>Luyện Thị Giác Ngoại Vi: Schulte 1→30</span>
+                <span class="truncate">Schulte 1→30</span>
               </span>
               <span class="text-cyan-400 font-mono text-sm group-hover:translate-x-1 transition">→</span>
+            </button>
+
+            <!-- SINH TỒN -->
+            <button id="btnStartSurvivalQuick" type="button" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800 text-rose-300 hover:text-white text-xs font-semibold flex items-center justify-between transition active:scale-95 cursor-pointer group">
+              <span class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                  </svg>
+                </span>
+                <span class="truncate">Sinh Tồn Vô Hạn</span>
+              </span>
+              <span class="text-rose-400 font-mono text-sm group-hover:translate-x-1 transition">🔥</span>
             </button>
           </div>
         </div>
@@ -508,21 +509,6 @@
               <button type="button" data-cefr="custom" class="btn-cust-cefr px-2.5 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-amber-400 border-amber-900/60 shrink-0">
                 Từ Của Tôi
               </button>
-            </div>
-
-            <!-- Math Level Sub-Row (When math or combined) -->
-            <div id="customMathLevelRow" class="flex items-center gap-1.5 overflow-x-auto pt-1 pb-1 scrollbar-none">
-              <span class="text-[10px] font-mono text-cyan-400 font-bold shrink-0">Cấp Toán:</span>
-              <button type="button" data-mathlevel="1" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-cyan-500 text-slate-950 border-cyan-400 shrink-0">L1 Cơ bản</button>
-              <button type="button" data-mathlevel="2" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-slate-400 shrink-0">L2 Nhân chia</button>
-              <button type="button" data-mathlevel="3" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-slate-400 shrink-0">L3 Ẩn số x</button>
-              <button type="button" data-mathlevel="4" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-slate-400 shrink-0">L4 Căn & Lũy thừa</button>
-              <button type="button" data-mathlevel="5" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-slate-400 shrink-0">L5 Giai thừa</button>
-              <button type="button" data-mathlevel="6" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-slate-400 shrink-0">L6 Logarit</button>
-              <button type="button" data-mathlevel="7" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-slate-400 shrink-0">L7 Lượng giác</button>
-              <button type="button" data-mathlevel="8" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-rose-300 border-rose-900/60 shrink-0">L8 Đạo hàm 🔥</button>
-              <button type="button" data-mathlevel="9" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-amber-300 border-amber-900/60 shrink-0">L9 Tích phân ⚡</button>
-              <button type="button" data-mathlevel="10" class="btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-indigo-300 border-indigo-900/60 shrink-0">L10 Giải tích 👑</button>
             </div>
           </div>
 
@@ -670,15 +656,15 @@
       </div>
 
       <!-- MAIN ROTATING ARENA WRAPPER -->
-      <div id="arenaContainer" class="w-full aspect-square mx-auto relative flex items-center justify-center my-auto overflow-hidden select-none" style="max-height: calc(100dvh - 160px); max-width: calc(100dvh - 160px); touch-action: none;">
+      <div id="arenaContainer" class="w-full aspect-square mx-auto relative flex items-center justify-center my-auto overflow-hidden select-none" style="max-height: calc(100dvh - 140px); max-width: calc(100dvh - 140px); touch-action: none;">
         
         <!-- Concentric Ring Visual Guides -->
-        <div id="ringGuide1" class="orbit-ring-guide w-[180px] h-[180px]"></div>
-        <div id="ringGuide2" class="orbit-ring-guide w-[270px] h-[270px]"></div>
-        <div id="ringGuide3" class="orbit-ring-guide w-[340px] h-[340px]"></div>
+        <div id="ringGuide1" class="orbit-ring-guide w-[160px] h-[160px]"></div>
+        <div id="ringGuide2" class="orbit-ring-guide w-[240px] h-[240px]"></div>
+        <div id="ringGuide3" class="orbit-ring-guide w-[320px] h-[320px]"></div>
 
         <!-- CENTRAL HUB (TÂM VÒNG XOÁY - CỰC KỲ TINH GỌN, CHỈ HIỂN THỊ CÂU HỎI) -->
-        <div id="centralHub" class="absolute z-30 w-[92px] h-[92px] sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-slate-900/95 border-2 border-cyan-500/80 shadow-2xl glow-cyan flex flex-col items-center justify-center text-center p-1 sm:p-2 cursor-default transition-all duration-300 pointer-events-none">
+        <div id="centralHub" class="absolute z-30 w-[84px] h-[84px] sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full bg-slate-900/95 border-2 border-cyan-500/80 shadow-2xl glow-cyan flex flex-col items-center justify-center text-center p-1 sm:p-2 cursor-default transition-all duration-300 pointer-events-none">
           
           <!-- Countdown Ring on Hub Perimeter -->
           <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none p-0.5">

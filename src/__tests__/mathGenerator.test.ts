@@ -1,57 +1,75 @@
 import { describe, it, expect } from 'vitest';
 import { generateMathProblem, MATH_LEVELS_META } from '../services/mathGenerator';
 
-describe('10-Tier Math Engine Generator', () => {
-  it('defines exactly 10 levels with rich metadata', () => {
-    expect(MATH_LEVELS_META).toHaveLength(10);
-    expect(MATH_LEVELS_META[7].name).toContain('Đạo Hàm');
-    expect(MATH_LEVELS_META[8].name).toContain('Tích Phân');
-    expect(MATH_LEVELS_META[9].name).toContain('Giải Tích');
+describe('3-Tier FocusGame Math Engine', () => {
+  it('defines 3 clear difficulty levels', () => {
+    expect(MATH_LEVELS_META).toHaveLength(3);
+    expect(MATH_LEVELS_META[0].badge).toBe('Dễ');
+    expect(MATH_LEVELS_META[1].badge).toBe('Vừa');
+    expect(MATH_LEVELS_META[2].badge).toBe('Khó');
   });
 
-  it('generates valid problems for all 10 levels', () => {
-    for (let level = 1; level <= 10; level++) {
-      for (let i = 0; i < 15; i++) {
+  it('generates valid problems for all 3 difficulty tiers', () => {
+    for (let level = 1; level <= 3; level++) {
+      for (let i = 0; i < 30; i++) {
         const p = generateMathProblem(level);
         expect(p.expression).toBeDefined();
-        expect(p.expression.length).toBeGreaterThan(2);
+        expect(p.expression.length).toBeGreaterThanOrEqual(3);
         expect(Number.isInteger(p.result)).toBe(true);
         expect(p.result).toBeGreaterThan(0);
       }
     }
   });
 
-  it('generates valid Level 8 Derivative problems with prime notation', () => {
-    for (let i = 0; i < 20; i++) {
-      const p = generateMathProblem(8);
-      expect(p.expression).toContain("'");
-      expect(p.expression).toContain('x=');
-      expect(p.result).toBeGreaterThan(0);
+  it('does NOT generate derivative or integral notations', () => {
+    for (let level = 1; level <= 3; level++) {
+      for (let i = 0; i < 50; i++) {
+        const p = generateMathProblem(level);
+        // Must never contain calculus symbols
+        expect(p.expression).not.toContain('∫');
+        expect(p.expression).not.toContain("dx");
+        expect(p.expression).not.toContain("d/dx");
+        expect(p.expression).not.toContain("' |");
+      }
     }
   });
 
-  it('generates valid Level 9 Definite Integral problems with integral symbol', () => {
-    for (let i = 0; i < 20; i++) {
-      const p = generateMathProblem(9);
-      expect(p.expression).toContain('∫');
-      expect(p.expression).toContain('dx');
+  it('generates clear addition and subtraction in Level 1 (Easy)', () => {
+    for (let i = 0; i < 30; i++) {
+      const p = generateMathProblem(1);
       expect(p.result).toBeGreaterThan(0);
+      expect(p.result).toBeLessThanOrEqual(60);
     }
   });
 
-  it('generates valid Level 10 Master Calculus problems', () => {
-    for (let i = 0; i < 20; i++) {
-      const p = generateMathProblem(10);
-      const isCalculus = p.expression.includes('∫') || p.expression.includes("'");
-      expect(isCalculus).toBe(true);
+  it('generates multiplication and parenthesis in Level 2 (Medium)', () => {
+    let hasMultiplication = false;
+    for (let i = 0; i < 30; i++) {
+      const p = generateMathProblem(2);
+      if (p.expression.includes('×') || p.expression.includes('÷')) {
+        hasMultiplication = true;
+      }
       expect(p.result).toBeGreaterThan(0);
     }
+    expect(hasMultiplication).toBe(true);
+  });
+
+  it('generates missing variable or multi-step logic in Level 3 (Hard)', () => {
+    let hasAlgebraOrStep = false;
+    for (let i = 0; i < 30; i++) {
+      const p = generateMathProblem(3);
+      if (p.expression.includes('?') || p.expression.includes('x') || p.expression.includes('%') || p.expression.includes('(')) {
+        hasAlgebraOrStep = true;
+      }
+      expect(p.result).toBeGreaterThan(0);
+    }
+    expect(hasAlgebraOrStep).toBe(true);
   });
 
   it('generates chained math problems correctly using previous answer', () => {
-    const prev = 15;
-    for (let i = 0; i < 10; i++) {
-      const p = generateMathProblem(4, prev);
+    const prev = 18;
+    for (let i = 0; i < 20; i++) {
+      const p = generateMathProblem(2, prev);
       expect(p.expression).toContain(String(prev));
       expect(p.result).toBeGreaterThan(0);
     }
