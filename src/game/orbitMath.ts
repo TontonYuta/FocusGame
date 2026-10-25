@@ -11,28 +11,29 @@ export function calculateRingRadii(
   const centerX = arenaRect.width / 2;
   const centerY = arenaRect.height / 2;
   const isMobile = arenaRect.width < 480;
+  const isSmallMobile = arenaRect.width < 380;
 
   const hubRect = hubElement.getBoundingClientRect();
-  const hubRadius = (hubRect.width / 2) || (isMobile ? 52 : 64);
-  const nodeRadius = isMobile ? 22 : 26;
-  const innerMargin = isMobile ? 12 : 18;
+  const hubRadius = (hubRect.width / 2) || (isSmallMobile ? 46 : isMobile ? 52 : 64);
+  const nodeRadius = isSmallMobile ? 20 : isMobile ? 22 : 26;
+  const innerMargin = isSmallMobile ? 10 : isMobile ? 14 : 18;
 
   const minOrbit = hubRadius + nodeRadius + innerMargin;
-  const maxRadius = Math.min(centerX, centerY) * 0.94;
-  const maxOrbit = Math.max(minOrbit + 24, maxRadius - nodeRadius - (isMobile ? 4 : 8));
+  const maxRadius = Math.min(centerX, centerY) * 0.95;
+  const maxOrbit = Math.max(minOrbit + 26, maxRadius - nodeRadius - (isSmallMobile ? 2 : isMobile ? 4 : 8));
 
   let ringRadii: number[] = [];
   if (ringsCount === 1) {
     ringRadii = [(minOrbit + maxOrbit) / 2];
   } else if (ringsCount === 2) {
     ringRadii = [
-      minOrbit + (maxOrbit - minOrbit) * 0.22,
+      minOrbit,
       maxOrbit
     ];
   } else {
     ringRadii = [
       minOrbit,
-      minOrbit + (maxOrbit - minOrbit) * 0.52,
+      minOrbit + (maxOrbit - minOrbit) * 0.50,
       maxOrbit
     ];
   }

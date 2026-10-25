@@ -61,7 +61,7 @@ export function updateArenaHud(
   if (targetType === 'math') {
     if (hubMath && math) {
       hubMath.innerText = math.expression;
-      hubMath.className = 'font-mono text-xl sm:text-2xl md:text-3xl font-black text-amber-300 tracking-tight leading-none text-center';
+      hubMath.className = 'font-mono text-base sm:text-2xl md:text-3xl font-black text-amber-300 tracking-tight leading-none text-center px-1';
       hubMath.classList.remove('hidden');
     }
     if (hubVocab) hubVocab.classList.add('hidden');
@@ -69,7 +69,7 @@ export function updateArenaHud(
     if (hubVocab && vocab) {
       hubVocab.innerText = vocab.vi;
       const viLen = vocab.vi.length;
-      const viSizeClass = viLen >= 14 ? 'text-xs sm:text-base md:text-lg' : viLen >= 9 ? 'text-sm sm:text-lg md:text-xl' : 'text-base sm:text-xl md:text-2xl';
+      const viSizeClass = viLen >= 14 ? 'text-xs sm:text-sm md:text-base' : viLen >= 9 ? 'text-xs sm:text-base md:text-lg' : 'text-sm sm:text-lg md:text-xl';
       hubVocab.className = `font-patrick ${viSizeClass} font-bold text-cyan-300 leading-tight text-center px-1 break-words`;
       hubVocab.classList.remove('hidden');
     }
@@ -78,7 +78,7 @@ export function updateArenaHud(
     // Schulte
     if (hubMath) {
       hubMath.innerText = String(schulteTarget);
-      hubMath.className = 'font-mono text-3xl sm:text-5xl md:text-6xl font-black text-white leading-none text-center';
+      hubMath.className = 'font-mono text-2xl sm:text-4xl md:text-5xl font-black text-white leading-none text-center';
       hubMath.classList.remove('hidden');
     }
     if (hubVocab) hubVocab.classList.add('hidden');
