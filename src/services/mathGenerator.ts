@@ -72,16 +72,19 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
 
     case 3: {
       // Two-step operations (e.g., (6 * 4) - 5)
-      const a = Math.floor(Math.random() * 7) + 3;
-      const b = Math.floor(Math.random() * 6) + 3;
-      const c = Math.floor(Math.random() * 9) + 3;
+      const a = Math.floor(Math.random() * 6) + 3; // 3..8
+      const b = Math.floor(Math.random() * 5) + 3; // 3..7 (min prod = 9)
+      const prod = a * b;
       const isSub = Math.random() > 0.4;
       if (isSub) {
+        const maxC = Math.max(2, Math.min(10, prod - 3));
+        const c = Math.floor(Math.random() * (maxC - 1)) + 2;
         expr = `(${a} × ${b}) - ${c}`;
-        ans = (a * b) - c;
+        ans = prod - c;
       } else {
+        const c = Math.floor(Math.random() * 9) + 3;
         expr = `(${a} × ${b}) + ${c}`;
-        ans = (a * b) + c;
+        ans = prod + c;
       }
       break;
     }

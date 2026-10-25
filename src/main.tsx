@@ -1,11 +1,14 @@
 import { GameEngine, getGameConfig, getSchulteConfig, GameMode, Difficulty, GameConfig } from './game/engine';
 import { audio } from './services/audio';
 import { storage } from './services/storage';
+import { getVocabPoolByLevel } from './data/vocabulary';
 import { initModeSelect } from './ui/modeSelect';
 import { initCustomSelect } from './ui/customSelect';
 import { updateArenaHud } from './ui/arenaHud';
 import { initModalResults, showMatchResults } from './ui/modalResults';
 import { initModalNotebook } from './ui/modalNotebook';
+import { initModalUpdate } from './ui/modalUpdate';
+import { initModalPreview, showVocabPreviewDeck } from './ui/modalPreview';
 
 let engine: GameEngine;
 let activeConfig: GameConfig;
@@ -22,6 +25,26 @@ function showScreen(screen: 'select' | 'arena') {
     screenSelect.classList.add('hidden');
     screenArena.classList.remove('hidden');
   }
+}
+
+function launchMatch(config: GameConfig) {
+  activeConfig = config;
+  const isVocabMode = config.mode === 'vocab' || config.mode === 'combined' || config.mode === 'survival';
+  const shouldPreview = isVocabMode && storage.getPreviewVocabSetting();
+
+  if (shouldPreview) {
+    const pool = getVocabPoolByLevel(config.cefrLevel || 'A1');
+    if (pool.length > 0) {
+      showVocabPreviewDeck(pool.slice(0, 16), config.name, () => {
+        showScreen('arena');
+        engine.startMatch(config);
+      });
+      return;
+    }
+  }
+
+  showScreen('arena');
+  engine.startMatch(config);
 }
 
 function updateSoundUI() {
@@ -64,9 +87,8 @@ function init() {
 
   initModeSelect({
     onStartMatch: (mode: GameMode, diff: Difficulty) => {
-      activeConfig = getGameConfig(mode, diff);
-      showScreen('arena');
-      engine.startMatch(activeConfig);
+      const cfg = getGameConfig(mode, diff);
+      launchMatch(cfg);
     },
     onStartSchulte: () => {
       activeConfig = getSchulteConfig();
@@ -77,9 +99,7 @@ function init() {
 
   initCustomSelect({
     onStartCustom: (customConfig: GameConfig) => {
-      activeConfig = customConfig;
-      showScreen('arena');
-      engine.startMatch(activeConfig);
+      launchMatch(customConfig);
     }
   });
 
@@ -100,6 +120,16 @@ function init() {
   });
 
   initModalNotebook();
+  initModalUpdate();
+  initModalPreview();
+
+  const chkQuickPreview = document.getElementById('chkQuickPreviewVocab') as HTMLInputElement | null;
+  if (chkQuickPreview) {
+    chkQuickPreview.checked = storage.getPreviewVocabSetting();
+    chkQuickPreview.addEventListener('change', () => {
+      storage.setPreviewVocabSetting(chkQuickPreview.checked);
+    });
+  }
 
   // Navigation & Pause
   document.getElementById('btnHome')?.addEventListener('click', () => {
@@ -145,6 +175,8 @@ function init() {
 
     const modalResults = document.getElementById('modalAnalytics');
     const modalNotebook = document.getElementById('modalNotebook');
+    const modalPreview = document.getElementById('modalVocabPreview');
+    const modalUpdate = document.getElementById('modalUpdate');
     const isArenaActive = !screenArena.classList.contains('hidden');
     const isSelectActive = !screenSelect.classList.contains('hidden');
 
@@ -169,7 +201,11 @@ function init() {
       }
     } else if (e.code === 'Escape') {
       e.preventDefault();
-      if (modalNotebook && !modalNotebook.classList.contains('hidden')) {
+      if (modalPreview && !modalPreview.classList.contains('hidden')) {
+        modalPreview.classList.add('hidden');
+      } else if (modalUpdate && !modalUpdate.classList.contains('hidden')) {
+        modalUpdate.classList.add('hidden');
+      } else if (modalNotebook && !modalNotebook.classList.contains('hidden')) {
         modalNotebook.classList.add('hidden');
       } else if (modalResults && !modalResults.classList.contains('hidden')) {
         modalResults.classList.add('hidden');

@@ -10,7 +10,7 @@ export interface CustomGameParams {
   rings: number;
   speed: SpeedPreset;
   targetCount: number;
-  cefrLevel: CEFRLevel | 'all';
+  cefrLevel: CEFRLevel | 'all' | 'custom';
   allowBomb: boolean;
   hasReversal: boolean;
   isChainedMath: boolean;
@@ -41,7 +41,7 @@ export interface GameConfig {
   targetCount: number;
   timeLimitSec: number;
   baseSpeed: number;
-  cefrLevel: CEFRLevel | 'all';
+  cefrLevel: CEFRLevel | 'all' | 'custom';
   allowBomb: boolean;
   hasReversal: boolean;
   hasSinusoidalSpeed?: boolean;

@@ -224,6 +224,16 @@
           <span id="mistakeBadgeCount" class="hidden px-1.5 py-0.5 text-[9px] font-bold bg-rose-500 text-white rounded-full leading-none">0</span>
         </button>
 
+        <!-- Cập Nhật Phiên Bản Button -->
+        <button id="btnCheckUpdate" class="relative w-9 h-9 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-emerald-500 hover:text-emerald-400 text-slate-300 flex items-center justify-center transition active:scale-95 shadow-sm" title="Kiểm tra & Cập nhật phiên bản mới">
+          <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span id="updateDotBadge" class="hidden absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        </button>
+
         <!-- Sound Audio FX Toggle -->
         <button id="btnToggleSound" class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-cyan-400 transition active:scale-95 shadow-sm" title="Bật/Tắt âm thanh">
           <svg id="iconSoundOn" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -335,6 +345,21 @@
             </div>
           </div>
 
+          <!-- PRE-STUDY VOCABULARY TOGGLE -->
+          <div id="containerQuickPreviewToggle" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 transition">
+            <div class="flex items-center gap-2">
+              <span class="text-base">👁️</span>
+              <div>
+                <div class="text-xs font-bold text-slate-200">Xem trước từ vựng (Pre-Study Deck)</div>
+                <div class="text-[10px] text-slate-400">Ghi nhớ trước mặt chữ & phát âm để tăng tốc phản xạ</div>
+              </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="chkQuickPreviewVocab" type="checkbox" class="sr-only peer" checked>
+              <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+            </label>
+          </div>
+
           <!-- PRIMARY CTA BUTTON: START GAME -->
           <div class="pt-1">
             <button id="btnStartGame" type="button" class="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-base sm:text-lg tracking-wide shadow-xl shadow-cyan-500/25 transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
@@ -397,6 +422,9 @@
               </button>
               <button type="button" data-cefr="C1" class="btn-cust-cefr px-2.5 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-slate-400 shrink-0">
                 C1
+              </button>
+              <button type="button" data-cefr="custom" class="btn-cust-cefr px-2.5 py-1 text-[11px] font-bold rounded-lg border bg-slate-900 border-slate-800 text-amber-400 border-amber-900/60 shrink-0">
+                Từ Của Tôi
               </button>
             </div>
           </div>
@@ -720,15 +748,38 @@
           <button data-filter="B1" class="btnNotebookTab px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition shrink-0 active:scale-95">B1</button>
           <button data-filter="B2" class="btnNotebookTab px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition shrink-0 active:scale-95">B2</button>
           <button data-filter="C1" class="btnNotebookTab px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition shrink-0 active:scale-95">C1</button>
+          <button data-filter="custom" class="btnNotebookTab px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white transition shrink-0 active:scale-95 flex items-center gap-1">
+            <span>Từ Của Tôi</span>
+            <span id="notebookCustomCountTag" class="px-1 text-[10px] bg-amber-500 text-slate-950 font-bold rounded-full">0</span>
+          </button>
         </div>
 
         <div class="flex items-center gap-2">
           <div class="relative flex-1">
             <input id="searchVocabInput" type="text" placeholder="Tìm từ tiếng Anh hoặc tiếng Việt..." class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500" />
           </div>
+          <button id="btnToggleAddCustom" class="px-2.5 py-1.5 text-xs font-bold text-amber-300 hover:text-white bg-amber-950/40 hover:bg-amber-900/60 border border-amber-800/80 rounded-xl transition shrink-0 active:scale-95 flex items-center gap-1" title="Thêm từ vựng mới vào bộ từ của bạn">
+            <span>+ Thêm Từ</span>
+          </button>
           <button id="btnClearMistakes" class="px-2.5 py-1.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 border border-rose-900/60 rounded-xl transition shrink-0 active:scale-95" title="Xóa lịch sử lỗi sai">
             Xóa Lỗi
           </button>
+        </div>
+      </div>
+
+      <!-- Form Thêm Từ Vựng Cá Nhân -->
+      <div id="formAddCustomVocab" class="hidden p-3 bg-slate-950/90 border-b border-slate-800 space-y-2">
+        <div class="text-[11px] font-bold text-amber-400 flex items-center gap-1.5">
+          <span>✍️</span> Thêm Từ Vựng Mới
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <input id="inputCustomWordEn" type="text" placeholder="Từ tiếng Anh (VD: focus)" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500" />
+          <input id="inputCustomWordVi" type="text" placeholder="Nghĩa tiếng Việt (VD: tập trung)" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500" />
+          <input id="inputCustomWordIpa" type="text" placeholder="Phiên âm (tùy chọn: /ˈfoʊkəs/)" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500" />
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button id="btnCancelAddCustom" type="button" class="px-3 py-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 rounded-xl transition active:scale-95">Hủy</button>
+          <button id="btnSaveCustomWord" type="button" class="px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl transition active:scale-95 shadow-sm">Lưu Từ</button>
         </div>
       </div>
 
@@ -763,6 +814,120 @@
           <kbd class="hidden sm:inline-block text-rose-300">Esc</kbd>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: XEM TRƯỚC BỘ TỪ VỰNG (PRE-STUDY PRIMING DECK) -->
+  <div id="modalVocabPreview" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+      
+      <!-- Header -->
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/70">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+            <span class="text-lg">👁️</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base sm:text-lg font-bold text-white leading-none">Bộ Từ Chuẩn Bị</h3>
+              <span id="previewDeckCount" class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">0 Từ</span>
+            </div>
+            <p id="previewDeckTitle" class="text-xs text-slate-400 mt-1">Làm quen từ & nghĩa trước khi kích hoạt tốc độ</p>
+          </div>
+        </div>
+        <button id="btnCloseVocabPreview" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95" title="Đóng">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Word List Deck -->
+      <div id="previewVocabList" class="p-3 sm:p-4 overflow-y-auto space-y-2 flex-1 max-h-[50vh]">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Footer Action -->
+      <div class="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/70 space-y-3">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input id="chkAutoPreviewSetting" type="checkbox" class="w-3.5 h-3.5 rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0" checked>
+            <span>Luôn mở bảng này trước khi chơi từ vựng</span>
+          </label>
+        </div>
+
+        <button id="btnConfirmStartAfterPreview" type="button" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-sm tracking-wide shadow-xl shadow-cyan-500/25 transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+          <span>TÔI ĐÃ THUỘC · BẮT ĐẦU CHƠI!</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- MODAL: CẬP NHẬT PHIÊN BẢN (IN-APP UPDATE CHECKER) -->
+  <div id="modalUpdate" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-5 overflow-hidden">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white leading-none">Cập Nhật Phiên Bản</h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">FocusGame Android / Web</p>
+          </div>
+        </div>
+        <button id="btnCloseUpdateModal" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition active:scale-95">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- State 1: Loading -->
+      <div id="updateLoadingState" class="py-6 text-center space-y-3">
+        <div class="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p class="text-xs text-slate-300">Đang kiểm tra phiên bản mới nhất từ GitHub...</p>
+      </div>
+
+      <!-- State 2: Latest (Up to date) -->
+      <div id="updateLatestState" class="hidden py-4 text-center space-y-2">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-2 text-xl">
+          ✓
+        </div>
+        <h4 class="text-sm font-bold text-white">Ứng dụng đã ở bản mới nhất</h4>
+        <p class="text-xs text-slate-400">Phiên bản hiện tại: <span id="updateCurrentVer" class="font-mono text-emerald-400 font-bold">v1.0.0</span></p>
+      </div>
+
+      <!-- State 3: Available (Has New Update) -->
+      <div id="updateAvailableState" class="hidden space-y-3">
+        <div class="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-800/80">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-semibold text-slate-300">Bản phát hành mới:</span>
+            <span id="updateNewVer" class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-700">v1.1.0</span>
+          </div>
+          <div id="updateReleaseNotes" class="text-xs text-slate-300 max-h-28 overflow-y-auto pr-1 whitespace-pre-wrap leading-relaxed mt-2 border-t border-emerald-900/50 pt-2 font-sans">
+            Tối ưu hóa hiệu năng và bổ sung tính năng mới.
+          </div>
+        </div>
+
+        <a id="btnDownloadApk" href="#" download class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold text-xs tracking-wide shadow-lg shadow-emerald-500/20 transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>TẢI CẬP NHẬT (.APK)</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </a>
+      </div>
+
+      <!-- State 4: Error -->
+      <div id="updateErrorState" class="hidden py-4 text-center space-y-2">
+        <div class="text-rose-400 text-2xl mb-1">⚠️</div>
+        <h4 class="text-xs font-bold text-rose-300">Không thể kiểm tra bản mới</h4>
+        <p id="updateErrorMessage" class="text-[11px] text-slate-400">Lỗi kết nối mạng</p>
+        <button id="btnRetryCheckUpdate" type="button" class="mt-2 px-3 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition active:scale-95">
+          Thử Lại
+        </button>
+      </div>
+
     </div>
   </div>
 

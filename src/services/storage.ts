@@ -22,7 +22,9 @@ const STORAGE_KEYS = {
   DEV_UNLOCK_ALL: 'spinning_mind_dev_unlock_all',
   SOUND_ENABLED: 'spinning_mind_sound_enabled',
   SPEECH_ENABLED: 'spinning_mind_speech_enabled',
-  GLOBAL_CATEGORY: 'spinning_mind_global_category'
+  GLOBAL_CATEGORY: 'spinning_mind_global_category',
+  CUSTOM_VOCAB: 'spinning_mind_custom_vocab',
+  PREVIEW_VOCAB_ENABLED: 'spinning_mind_preview_vocab_enabled'
 };
 
 class StorageService {
@@ -172,6 +174,63 @@ class StorageService {
     try {
       localStorage.setItem('spinning_mind_custom_params', JSON.stringify(params));
     } catch {}
+  }
+
+  public getCustomVocab(): import('../data/types').VocabItem[] {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.CUSTOM_VOCAB);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  }
+
+  public addCustomVocab(item: { en: string; vi: string; ipa?: string; hint?: string }): import('../data/types').VocabItem {
+    const list = this.getCustomVocab();
+    const cleanEn = item.en.trim();
+    const cleanVi = item.vi.trim();
+    const existingIndex = list.findIndex(v => v.en.toLowerCase() === cleanEn.toLowerCase());
+
+    const newItem: import('../data/types').VocabItem = {
+      id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      en: cleanEn,
+      vi: cleanVi,
+      level: 'A1',
+      cat: 'daily',
+      ipa: item.ipa?.trim() || `/${cleanEn.toLowerCase()}/`,
+      hint: item.hint?.trim() || ''
+    };
+
+    if (existingIndex >= 0) {
+      list[existingIndex] = newItem;
+    } else {
+      list.unshift(newItem);
+    }
+
+    try {
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_VOCAB, JSON.stringify(list));
+    } catch {}
+    return newItem;
+  }
+
+  public deleteCustomVocab(enOrId: string): void {
+    const list = this.getCustomVocab().filter(
+      v => v.id !== enOrId && v.en.toLowerCase() !== enOrId.toLowerCase()
+    );
+    try {
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_VOCAB, JSON.stringify(list));
+    } catch {}
+  }
+
+  public getPreviewVocabSetting(): boolean {
+    const item = localStorage.getItem(STORAGE_KEYS.PREVIEW_VOCAB_ENABLED);
+    return item !== 'false';
+  }
+
+  public setPreviewVocabSetting(enabled: boolean): void {
+    localStorage.setItem(STORAGE_KEYS.PREVIEW_VOCAB_ENABLED, enabled ? 'true' : 'false');
   }
 }
 

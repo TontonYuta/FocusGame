@@ -15,7 +15,7 @@ export function initCustomSelect(callbacks: CustomSelectCallbacks) {
     rings: saved.rings || 2,
     speed: (saved.speed as SpeedPreset) || 'normal',
     targetCount: saved.targetCount || 15,
-    cefrLevel: (saved.cefrLevel as CEFRLevel | 'all') || 'all',
+    cefrLevel: (saved.cefrLevel as CEFRLevel | 'all' | 'custom') || 'all',
     allowBomb: saved.allowBomb ?? true,
     hasReversal: saved.hasReversal ?? true,
     isChainedMath: saved.isChainedMath ?? false
@@ -109,7 +109,7 @@ export function initCustomSelect(callbacks: CustomSelectCallbacks) {
 
   document.querySelectorAll<HTMLButtonElement>('.btn-cust-cefr').forEach(b => {
     b.addEventListener('click', () => {
-      params.cefrLevel = (b.dataset.cefr as CEFRLevel | 'all') || 'all';
+      params.cefrLevel = (b.dataset.cefr as CEFRLevel | 'all' | 'custom') || 'all';
       updateActiveStates();
     });
   });
