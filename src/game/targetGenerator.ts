@@ -37,8 +37,21 @@ export function generateNextTarget(
   let newPrevAnswer = previousMathAnswer;
 
   if (turnType === 'math') {
+    let activeLevel = config.mathLevel || 1;
+    if (!config.mathLevel) {
+      if (config.mode === 'survival') {
+        activeLevel = Math.floor(Math.random() * 4) + 7;
+      } else if (config.difficulty === 'easy') {
+        activeLevel = Math.floor(Math.random() * 3) + 1;
+      } else if (config.difficulty === 'medium') {
+        activeLevel = Math.floor(Math.random() * 3) + 4;
+      } else {
+        activeLevel = Math.floor(Math.random() * 4) + 7;
+      }
+    }
+
     const mathProblem = generateMathProblem(
-      config.id,
+      activeLevel,
       config.isChainedMath ? previousMathAnswer : undefined
     );
     currentMath = mathProblem;

@@ -1,4 +1,5 @@
 import { GameConfig, GameMode, Difficulty, CustomGameParams } from './types';
+import { MATH_LEVELS_META } from '../services/mathGenerator';
 
 export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfig {
   const modeLabels: Record<GameMode, string> = {
@@ -52,6 +53,7 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
       timeLimitSec: 60,
       baseSpeed: 0.0032,
       cefrLevel: 'A1',
+      mathLevel: 1,
       allowBomb: false,
       hasReversal: false
     };
@@ -70,6 +72,7 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
       timeLimitSec: 65,
       baseSpeed: 0.0042,
       cefrLevel: 'A2',
+      mathLevel: 4,
       allowBomb: false,
       hasReversal: true
     };
@@ -88,6 +91,7 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
     timeLimitSec: 75,
     baseSpeed: 0.0055,
     cefrLevel: 'B2',
+    mathLevel: 8,
     allowBomb: true,
     hasReversal: true,
     hasSinusoidalSpeed: true,
@@ -125,10 +129,39 @@ export function createCustomGameConfig(p: CustomGameParams): GameConfig {
     timeLimitSec: timeLimit,
     baseSpeed: speeds[p.speed] || 0.0042,
     cefrLevel: p.cefrLevel,
+    mathLevel: p.mathLevel || 1,
     allowBomb: p.allowBomb,
     hasReversal: p.hasReversal,
     hasSinusoidalSpeed: p.speed === 'wave',
     isChainedMath: p.isChainedMath
+  };
+}
+
+export function getMathLevelConfig(level: number, diff: Difficulty = 'medium'): GameConfig {
+  const safeLevel = Math.max(1, Math.min(10, Math.round(level || 1)));
+  const meta = MATH_LEVELS_META[safeLevel - 1] || MATH_LEVELS_META[0];
+
+  const ringCount = safeLevel <= 3 ? 1 : safeLevel <= 7 ? 2 : 3;
+  const nodeCount = safeLevel <= 3 ? 10 : safeLevel <= 7 ? 16 : 22;
+  const baseSpeed = 0.0030 + safeLevel * 0.0003;
+
+  return {
+    id: safeLevel,
+    mode: 'math',
+    difficulty: diff,
+    name: `Toán Cấp ${safeLevel}: ${meta.name}`,
+    subtitle: `${meta.description} · ${meta.category}`,
+    rings: ringCount,
+    nodeCount,
+    targetCount: 15,
+    timeLimitSec: 60 + safeLevel * 3,
+    baseSpeed,
+    cefrLevel: 'A1',
+    mathLevel: safeLevel,
+    allowBomb: safeLevel >= 6,
+    hasReversal: safeLevel >= 4,
+    hasSinusoidalSpeed: safeLevel >= 8,
+    isChainedMath: false
   };
 }
 

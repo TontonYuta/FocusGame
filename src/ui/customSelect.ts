@@ -16,6 +16,7 @@ export function initCustomSelect(callbacks: CustomSelectCallbacks) {
     speed: (saved.speed as SpeedPreset) || 'normal',
     targetCount: saved.targetCount || 15,
     cefrLevel: (saved.cefrLevel as CEFRLevel | 'all' | 'custom') || 'all',
+    mathLevel: saved.mathLevel || 1,
     allowBomb: saved.allowBomb ?? true,
     hasReversal: saved.hasReversal ?? true,
     isChainedMath: saved.isChainedMath ?? false
@@ -23,6 +24,7 @@ export function initCustomSelect(callbacks: CustomSelectCallbacks) {
 
   const btnStart = document.getElementById('btnStartCustomGame');
   const cefrRow = document.getElementById('customCefrRow');
+  const mathRow = document.getElementById('customMathLevelRow');
 
   function updateActiveStates() {
     // Mode buttons
@@ -41,6 +43,20 @@ export function initCustomSelect(callbacks: CustomSelectCallbacks) {
       if (params.mode === 'math') cefrRow.classList.add('hidden');
       else cefrRow.classList.remove('hidden');
     }
+
+    // Show/hide Math Level row if math or combined
+    if (mathRow) {
+      if (params.mode === 'vocab') mathRow.classList.add('hidden');
+      else mathRow.classList.remove('hidden');
+    }
+
+    // Math Level buttons
+    document.querySelectorAll<HTMLButtonElement>('.btn-cust-mathlevel').forEach(b => {
+      const active = Number(b.dataset.mathlevel) === (params.mathLevel || 1);
+      b.className = `btn-cust-mathlevel px-2 py-1 text-[11px] font-bold rounded-lg border transition active:scale-95 shrink-0 cursor-pointer ${
+        active ? 'bg-cyan-500 text-slate-950 border-cyan-400' : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+      }`;
+    });
 
     // CEFR buttons
     document.querySelectorAll<HTMLButtonElement>('.btn-cust-cefr').forEach(b => {
@@ -110,6 +126,13 @@ export function initCustomSelect(callbacks: CustomSelectCallbacks) {
   document.querySelectorAll<HTMLButtonElement>('.btn-cust-cefr').forEach(b => {
     b.addEventListener('click', () => {
       params.cefrLevel = (b.dataset.cefr as CEFRLevel | 'all' | 'custom') || 'all';
+      updateActiveStates();
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.btn-cust-mathlevel').forEach(b => {
+    b.addEventListener('click', () => {
+      params.mathLevel = Number(b.dataset.mathlevel) || 1;
       updateActiveStates();
     });
   });

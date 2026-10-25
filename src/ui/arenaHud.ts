@@ -61,7 +61,13 @@ export function updateArenaHud(
   if (targetType === 'math') {
     if (hubMath && math) {
       hubMath.innerText = math.expression;
-      hubMath.className = 'font-mono text-base sm:text-2xl md:text-3xl font-black text-amber-300 tracking-tight leading-none text-center px-1';
+      const exprLen = math.expression.length;
+      const sizeClass = exprLen >= 15
+        ? 'text-xs sm:text-sm md:text-base'
+        : exprLen >= 10
+          ? 'text-sm sm:text-lg md:text-xl'
+          : 'text-base sm:text-2xl md:text-3xl';
+      hubMath.className = `font-mono ${sizeClass} font-black text-amber-300 tracking-tight leading-snug text-center px-1 break-words select-none`;
       hubMath.classList.remove('hidden');
     }
     if (hubVocab) hubVocab.classList.add('hidden');

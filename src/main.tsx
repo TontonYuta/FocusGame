@@ -1,4 +1,4 @@
-import { GameEngine, getGameConfig, getSchulteConfig, GameMode, Difficulty, GameConfig } from './game/engine';
+import { GameEngine, getGameConfig, getMathLevelConfig, getSchulteConfig, GameMode, Difficulty, GameConfig } from './game/engine';
 import { audio } from './services/audio';
 import { storage } from './services/storage';
 import { getVocabPoolByLevel } from './data/vocabulary';
@@ -86,8 +86,14 @@ function init() {
   );
 
   initModeSelect({
-    onStartMatch: (mode: GameMode, diff: Difficulty) => {
-      const cfg = getGameConfig(mode, diff);
+    onStartMatch: (mode: GameMode, diff: Difficulty, mathLevel?: number) => {
+      let cfg: GameConfig;
+      if (mode === 'math' && mathLevel) {
+        cfg = getMathLevelConfig(mathLevel, diff);
+      } else {
+        cfg = getGameConfig(mode, diff);
+        if (mathLevel) cfg.mathLevel = mathLevel;
+      }
       launchMatch(cfg);
     },
     onStartSchulte: () => {
