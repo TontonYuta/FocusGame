@@ -756,15 +756,30 @@
         <!-- 4-AXIS RADAR CHART CANVAS -->
         <div class="bg-slate-950/60 rounded-2xl p-3 flex flex-col items-center">
           <div class="text-xs font-bold text-slate-300 mb-1 flex items-center justify-between w-full px-1">
-            <span>4 CHỈ SỐ NHẬN THỨC</span>
-            <span class="text-[10px] font-mono text-cyan-400">THANG 100</span>
+            <span class="flex items-center gap-1.5">
+              <span>🕸️</span>
+              <span>BIỂU ĐỒ NĂNG LỰC NHẬN THỨC</span>
+            </span>
+            <span class="text-[10px] font-mono text-cyan-400 font-bold">THANG 100</span>
           </div>
-          <canvas id="radarChartCanvas" width="280" height="240" class="max-w-full"></canvas>
-          <div class="grid grid-cols-4 gap-1 w-full text-[9px] text-center font-mono mt-1 pt-1.5 border-t border-slate-800/80">
-            <div class="text-cyan-400">Mắt: <span id="radarScoreVision" class="font-bold text-white">0</span></div>
-            <div class="text-amber-400">Toán: <span id="radarScoreMath" class="font-bold text-white">0</span></div>
-            <div class="text-emerald-400">Từ: <span id="radarScoreVocab" class="font-bold text-white">0</span></div>
-            <div class="text-rose-400">Xạ: <span id="radarScoreReflex" class="font-bold text-white">0</span></div>
+          <canvas id="radarChartCanvas" width="280" height="230" class="w-full max-w-[300px]"></canvas>
+          <div class="grid grid-cols-4 gap-1.5 w-full text-center font-mono mt-1 pt-2 border-t border-slate-800/80">
+            <div class="p-1.5 rounded-xl bg-cyan-950/40 border border-cyan-800/40 text-cyan-300">
+              <div class="text-[9px] text-cyan-400 font-sans">Tinh Mắt</div>
+              <span id="radarScoreVision" class="font-bold text-white text-xs">0</span>
+            </div>
+            <div class="p-1.5 rounded-xl bg-amber-950/40 border border-amber-800/40 text-amber-300">
+              <div class="text-[9px] text-amber-400 font-sans">Tính Nhẩm</div>
+              <span id="radarScoreMath" class="font-bold text-white text-xs">0</span>
+            </div>
+            <div class="p-1.5 rounded-xl bg-emerald-950/40 border border-emerald-800/40 text-emerald-300">
+              <div class="text-[9px] text-emerald-400 font-sans">Từ Vựng</div>
+              <span id="radarScoreVocab" class="font-bold text-white text-xs">0</span>
+            </div>
+            <div class="p-1.5 rounded-xl bg-rose-950/40 border border-rose-800/40 text-rose-300">
+              <div class="text-[9px] text-rose-400 font-sans">Phản Xạ</div>
+              <span id="radarScoreReflex" class="font-bold text-white text-xs">0</span>
+            </div>
           </div>
         </div>
 

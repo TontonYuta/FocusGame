@@ -5,44 +5,51 @@ export interface RadarData {
   reflex: number; // 0..100
 }
 
+/**
+ * High-DPI, razor-sharp 4-axis radar (spider) chart.
+ * Guaranteed zero label clipping on mobile viewports.
+ */
 export function drawRadarChart(canvas: HTMLCanvasElement, data: RadarData) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const cssWidth = canvas.clientWidth || 280;
+  const cssHeight = 230;
+
+  // HiDPI backing store for sharp retina rendering
+  canvas.width = Math.round(cssWidth * dpr);
+  canvas.height = Math.round(cssHeight * dpr);
+  canvas.style.width = `${cssWidth}px`;
+  canvas.style.height = `${cssHeight}px`;
+
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const width = canvas.width;
-  const height = canvas.height;
-  const centerX = width / 2;
-  const centerY = height / 2 + 6;
-  const radius = Math.min(centerX, centerY) - 38;
+  ctx.resetTransform?.();
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, cssWidth, cssHeight);
 
-  ctx.clearRect(0, 0, width, height);
+  const centerX = cssWidth / 2;
+  const centerY = cssHeight / 2;
+  // Radius budgeted so labels on all 4 sides have comfortable breathing room
+  const radius = Math.min(centerX, centerY) - 44;
 
   // 4 Axes:
-  // 0: Top (Vision - Tinh Mắt)
-  // 1: Right (Math - Tính Nhẩm)
-  // 2: Bottom (Vocab - Từ Vựng)
-  // 3: Left (Reflex - Phản Xạ Tay)
-  const labels = [
-    { name: 'Tinh Mắt', color: '#06b6d4', score: data.vision },
-    { name: 'Tính Nhẩm', color: '#f59e0b', score: data.math },
-    { name: 'Từ Vựng', color: '#10b981', score: data.vocab },
-    { name: 'Phản Xạ Tay', color: '#f43f5e', score: data.reflex }
+  // 0: Top    -> Tinh Mắt (Vision)
+  // 1: Right  -> Tính Nhẩm (Math)
+  // 2: Bottom -> Từ Vựng (Vocab)
+  // 3: Left   -> Phản Xạ (Reflex)
+  const axes = [
+    { name: 'Tinh Mắt', color: '#06b6d4', score: data.vision, angle: -Math.PI / 2 },
+    { name: 'Tính Nhẩm', color: '#f59e0b', score: data.math, angle: 0 },
+    { name: 'Từ Vựng', color: '#10b981', score: data.vocab, angle: Math.PI / 2 },
+    { name: 'Phản Xạ', color: '#f43f5e', score: data.reflex, angle: Math.PI }
   ];
 
-  const totalAxes = 4;
-  const angles = [
-    -Math.PI / 2,        // Top
-    0,                   // Right
-    Math.PI / 2,         // Bottom
-    Math.PI              // Left
-  ];
-
-  // Draw concentric polygon rings (25%, 50%, 75%, 100%)
+  // 1. Draw concentric diamond grid rings (25%, 50%, 75%, 100%)
   const steps = [0.25, 0.5, 0.75, 1.0];
   steps.forEach(ratio => {
     ctx.beginPath();
-    for (let i = 0; i < totalAxes; i++) {
-      const angle = angles[i];
+    for (let i = 0; i < 4; i++) {
+      const angle = axes[i].angle;
       const r = radius * ratio;
       const x = centerX + r * Math.cos(angle);
       const y = centerY + r * Math.sin(angle);
@@ -50,22 +57,22 @@ export function drawRadarChart(canvas: HTMLCanvasElement, data: RadarData) {
       else ctx.lineTo(x, y);
     }
     ctx.closePath();
-    ctx.strokeStyle = ratio === 1.0 ? 'rgba(148, 163, 184, 0.3)' : 'rgba(148, 163, 184, 0.12)';
+    ctx.strokeStyle = ratio === 1.0 ? 'rgba(148, 163, 184, 0.35)' : 'rgba(148, 163, 184, 0.14)';
     ctx.lineWidth = ratio === 1.0 ? 1.5 : 1;
     ctx.stroke();
 
-    // Subtle level text
+    // Scale level markers (50, 100) along top axis
     if (ratio === 0.5 || ratio === 1.0) {
-      ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
-      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
+      ctx.font = '8px "JetBrains Mono", monospace';
       ctx.textAlign = 'right';
-      ctx.fillText(`${Math.round(ratio * 100)}`, centerX - 4, centerY - radius * ratio + 3);
+      ctx.fillText(String(Math.round(ratio * 100)), centerX - 3, centerY - radius * ratio + 3);
     }
   });
 
-  // Draw spokes
-  for (let i = 0; i < totalAxes; i++) {
-    const angle = angles[i];
+  // 2. Draw 4 axis spokes
+  for (let i = 0; i < 4; i++) {
+    const angle = axes[i].angle;
     const x = centerX + radius * Math.cos(angle);
     const y = centerY + radius * Math.sin(angle);
 
@@ -77,19 +84,17 @@ export function drawRadarChart(canvas: HTMLCanvasElement, data: RadarData) {
     ctx.stroke();
   }
 
-  // Draw data polygon
-  const scores = [data.vision, data.math, data.vocab, data.reflex];
+  // 3. Compute data polygon points
   const points: { x: number; y: number }[] = [];
-
-  for (let i = 0; i < totalAxes; i++) {
-    const normalized = Math.max(0.12, Math.min(1.0, scores[i] / 100));
+  for (let i = 0; i < 4; i++) {
+    const normalized = Math.max(0.12, Math.min(1.0, axes[i].score / 100));
     const r = radius * normalized;
-    const x = centerX + r * Math.cos(angles[i]);
-    const y = centerY + r * Math.sin(angles[i]);
+    const x = centerX + r * Math.cos(axes[i].angle);
+    const y = centerY + r * Math.sin(axes[i].angle);
     points.push({ x, y });
   }
 
-  // Fill polygon with radiant cyan-indigo gradient
+  // 4. Draw polygon fill with glowing gradient
   ctx.beginPath();
   points.forEach((pt, i) => {
     if (i === 0) ctx.moveTo(pt.x, pt.y);
@@ -98,53 +103,70 @@ export function drawRadarChart(canvas: HTMLCanvasElement, data: RadarData) {
   ctx.closePath();
 
   const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, radius);
-  gradient.addColorStop(0, 'rgba(6, 182, 212, 0.5)');
-  gradient.addColorStop(1, 'rgba(99, 102, 241, 0.25)');
+  gradient.addColorStop(0, 'rgba(6, 182, 212, 0.45)');
+  gradient.addColorStop(1, 'rgba(99, 102, 241, 0.2)');
   ctx.fillStyle = gradient;
   ctx.fill();
 
   ctx.strokeStyle = '#22d3ee';
   ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
   ctx.stroke();
 
-  // Draw glowing data vertices
+  // 5. Draw glowing vertex dots
   points.forEach((pt, i) => {
     ctx.save();
     ctx.beginPath();
-    ctx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
-    ctx.fillStyle = labels[i].color;
-    ctx.shadowColor = labels[i].color;
-    ctx.shadowBlur = 10;
+    ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = axes[i].color;
+    ctx.shadowColor = axes[i].color;
+    ctx.shadowBlur = 8;
     ctx.fill();
     ctx.restore();
   });
 
-  // Draw labels and score indicators
-  labels.forEach((lbl, i) => {
-    const angle = angles[i];
-    const offset = 22;
-    const lx = centerX + (radius + offset) * Math.cos(angle);
-    const ly = centerY + (radius + offset) * Math.sin(angle);
-
-    ctx.fillStyle = lbl.color;
-    ctx.font = 'bold 11px "Inter", sans-serif';
-
-    if (i === 0) { // Top
+  // 6. Draw axis labels + score badges (no clipping guaranteed)
+  axes.forEach((axis, i) => {
+    ctx.save();
+    if (i === 0) {
+      // Top: Tinh Mắt
+      const y = centerY - radius - 8;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      ctx.fillText(lbl.name, lx, ly - 2);
-    } else if (i === 1) { // Right
+      ctx.font = 'bold 11px "Inter", sans-serif';
+      ctx.fillStyle = axis.color;
+      ctx.fillText(`${axis.name}: ${axis.score}`, centerX, y);
+    } else if (i === 1) {
+      // Right: Tính Nhẩm
+      const x = centerX + radius + 10;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.fillText(lbl.name, lx + 4, ly);
-    } else if (i === 2) { // Bottom
+      ctx.font = 'bold 10px "Inter", sans-serif';
+      ctx.fillStyle = axis.color;
+      ctx.fillText(axis.name, x, centerY - 6);
+      ctx.font = 'bold 11px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillText(String(axis.score), x, centerY + 7);
+    } else if (i === 2) {
+      // Bottom: Từ Vựng
+      const y = centerY + radius + 8;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText(lbl.name, lx, ly + 2);
-    } else { // Left
+      ctx.font = 'bold 11px "Inter", sans-serif';
+      ctx.fillStyle = axis.color;
+      ctx.fillText(`${axis.name}: ${axis.score}`, centerX, y);
+    } else {
+      // Left: Phản Xạ
+      const x = centerX - radius - 10;
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
-      ctx.fillText(lbl.name, lx - 4, ly);
+      ctx.font = 'bold 10px "Inter", sans-serif';
+      ctx.fillStyle = axis.color;
+      ctx.fillText(axis.name, x, centerY - 6);
+      ctx.font = 'bold 11px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillText(String(axis.score), x, centerY + 7);
     }
+    ctx.restore();
   });
 }
