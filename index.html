@@ -10,6 +10,15 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
 
+  <!-- App Icons & PWA Manifest -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#070b14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -188,13 +197,16 @@
       
       <!-- Brand Logo & App Name -->
       <button id="btnHome" class="flex items-center gap-2 group transition active:scale-95 text-left min-w-0">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition shrink-0">
-          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-            <circle cx="12" cy="2" r="1.5"></circle>
-            <circle cx="21" cy="12" r="1.5"></circle>
-            <circle cx="12" cy="22" r="1.5"></circle>
+        <!-- Logo Brand Badge with Animated Orbit Core -->
+        <div class="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-900 border border-cyan-500/40 flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:border-cyan-400 group-hover:scale-105 transition shrink-0 overflow-hidden">
+          <svg class="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 group-hover:rotate-45 transition duration-500" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="40" fill="currentColor" fill-opacity="0.1" />
+            <circle cx="50" cy="50" r="38" stroke="#06b6d4" stroke-width="3" stroke-dasharray="140 30" />
+            <circle cx="78" cy="28" r="4" fill="#22d3ee" />
+            <circle cx="50" cy="50" r="24" stroke="#818cf8" stroke-width="2.5" />
+            <circle cx="34" cy="66" r="3" fill="#f59e0b" />
+            <polygon points="50,40 60,50 50,60 40,50" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
+            <circle cx="50" cy="50" r="2.5" fill="#ffffff" />
           </svg>
         </div>
         <div class="min-w-0">
@@ -305,20 +317,41 @@
               1. Chế Độ Chơi
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5" id="modeSelectGrid">
-              <button type="button" data-mode="math" class="btn-mode-card selected flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-cyan-950/50 border-cyan-500 shadow-md glow-cyan cursor-pointer">
-                <span class="text-2xl sm:text-3xl mb-1">📐</span>
+              <button type="button" data-mode="math" class="btn-mode-card selected flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-cyan-950/50 border-cyan-500 shadow-md glow-cyan cursor-pointer group">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="12" y1="4" x2="12" y2="20"></line>
+                    <circle cx="18" cy="6" r="1.5" fill="currentColor"></circle>
+                    <circle cx="6" cy="18" r="1.5" fill="currentColor"></circle>
+                  </svg>
+                </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Toán</span>
               </button>
-              <button type="button" data-mode="vocab" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
-                <span class="text-2xl sm:text-3xl mb-1">📖</span>
+              <button type="button" data-mode="vocab" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                    <path d="M6 6h10"></path>
+                    <path d="M6 10h10"></path>
+                  </svg>
+                </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Tiếng Anh</span>
               </button>
-              <button type="button" data-mode="combined" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
-                <span class="text-2xl sm:text-3xl mb-1">⚡</span>
+              <button type="button" data-mode="combined" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Kết Hợp</span>
               </button>
-              <button type="button" data-mode="survival" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
-                <span class="text-2xl sm:text-3xl mb-1">🔥</span>
+              <button type="button" data-mode="survival" class="btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
+                <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center mb-1.5 shadow-sm group-hover:scale-110 transition">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                  </svg>
+                </div>
                 <span class="text-xs sm:text-sm font-bold text-rose-400">Sinh Tồn</span>
               </button>
             </div>
@@ -330,16 +363,29 @@
               2. Độ Khó
             </div>
             <div class="grid grid-cols-3 gap-2 sm:gap-3" id="diffSelectGrid">
-              <button type="button" data-diff="easy" class="btn-diff-card selected flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-emerald-950/50 border-emerald-500 shadow-md glow-cyan cursor-pointer">
-                <span class="text-xl sm:text-2xl mb-1.5">🟢</span>
+              <button type="button" data-diff="easy" class="btn-diff-card selected flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-emerald-950/50 border-emerald-500 shadow-md glow-cyan cursor-pointer group">
+                <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mb-1">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Dễ</span>
               </button>
-              <button type="button" data-diff="medium" class="btn-diff-card flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
-                <span class="text-xl sm:text-2xl mb-1.5">🟡</span>
+              <button type="button" data-diff="medium" class="btn-diff-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
+                <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center mb-1">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                  </svg>
+                </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Trung Bình</span>
               </button>
-              <button type="button" data-diff="hard" class="btn-diff-card flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer">
-                <span class="text-xl sm:text-2xl mb-1.5">🔴</span>
+              <button type="button" data-diff="hard" class="btn-diff-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer group">
+                <div class="w-7 h-7 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center mb-1">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                </div>
                 <span class="text-xs sm:text-sm font-bold text-white">Khó</span>
               </button>
             </div>
@@ -370,12 +416,21 @@
 
           <!-- SECONDARY: SCHULTE CLASSIC -->
           <div class="pt-2 border-t border-slate-800/80">
-            <button id="btnStartSchulte" type="button" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-between transition active:scale-95 cursor-pointer">
-              <span class="flex items-center gap-2">
-                <span>🎯</span>
+            <button id="btnStartSchulte" type="button" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800/80 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-between transition active:scale-95 cursor-pointer group">
+              <span class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <circle cx="12" cy="12" r="3.5"></circle>
+                    <line x1="12" y1="3" x2="12" y2="7"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                    <line x1="3" y1="12" x2="7" y2="12"></line>
+                    <line x1="17" y1="12" x2="21" y2="12"></line>
+                  </svg>
+                </span>
                 <span>Luyện Thị Giác Ngoại Vi: Schulte 1→30</span>
               </span>
-              <span class="text-cyan-400 font-mono text-sm">→</span>
+              <span class="text-cyan-400 font-mono text-sm group-hover:translate-x-1 transition">→</span>
             </button>
           </div>
         </div>
@@ -389,17 +444,21 @@
               1. Nội Dung Mục Tiêu
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
-              <button type="button" data-mode="math" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-slate-900 border-slate-800 text-slate-400 hover:text-white">
-                📐 Toán
+              <button type="button" data-mode="math" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-slate-900 border-slate-800 text-slate-400 hover:text-white flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                <span>Toán</span>
               </button>
-              <button type="button" data-mode="vocab" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-slate-900 border-slate-800 text-slate-400 hover:text-white">
-                📖 Tiếng Anh
+              <button type="button" data-mode="vocab" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-slate-900 border-slate-800 text-slate-400 hover:text-white flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/></svg>
+                <span>Tiếng Anh</span>
               </button>
-              <button type="button" data-mode="combined" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-cyan-950/60 border-cyan-500 text-white shadow-md glow-cyan">
-                ⚡ Kết Hợp
+              <button type="button" data-mode="combined" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-cyan-950/60 border-cyan-500 text-white shadow-md glow-cyan flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Kết Hợp</span>
               </button>
-              <button type="button" data-mode="survival" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-slate-900 border-slate-800 text-slate-400 hover:text-white">
-                🔥 Sinh Tồn
+              <button type="button" data-mode="survival" class="btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 bg-slate-900 border-slate-800 text-slate-400 hover:text-white flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                <span>Sinh Tồn</span>
               </button>
             </div>
 

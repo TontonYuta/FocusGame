@@ -31,7 +31,7 @@ export function initCustomSelect(callbacks: CustomSelectCallbacks) {
       const activeClass = params.mode === 'survival'
         ? 'bg-rose-950/60 border-rose-500 text-white shadow-md glow-red'
         : 'bg-cyan-950/60 border-cyan-500 text-white shadow-md glow-cyan';
-      b.className = `btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 cursor-pointer ${
+      b.className = `btn-cust-mode py-2 rounded-xl text-xs font-bold border-2 transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5 ${
         active ? activeClass : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
       }`;
     });

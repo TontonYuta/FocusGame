@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <radialGradient id="spaceGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="60%" stop-color="#070b14" />
+      <stop offset="100%" stop-color="#020408" />
+    </radialGradient>
+    <radialGradient id="cyanGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="innerOrbitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <filter id="neonBlur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="deepGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" />
+    </filter>
+  </defs>
+
+  <!-- Squircle App Background -->
+  <rect x="12" y="12" width="488" height="488" rx="112" fill="url(#spaceGrad)" stroke="#0ea5e9" stroke-width="3" stroke-opacity="0.4" />
+  
+  <!-- Subtle Center Ambient Glow -->
+  <circle cx="256" cy="256" r="210" fill="url(#cyanGlow)" />
+
+  <!-- Outer Orbit Glow & Ring -->
+  <circle cx="256" cy="256" r="185" fill="none" stroke="#06b6d4" stroke-width="12" stroke-opacity="0.3" filter="url(#deepGlow)" />
+  <circle cx="256" cy="256" r="185" fill="none" stroke="url(#orbitGrad)" stroke-width="7" stroke-dasharray="900" />
+
+  <!-- Orbiting Node 1 (Cyan Photon) -->
+  <g transform="rotate(-35 256 256)">
+    <circle cx="441" cy="256" r="26" fill="#06b6d4" fill-opacity="0.4" filter="url(#deepGlow)" />
+    <circle cx="441" cy="256" r="14" fill="#22d3ee" stroke="#ffffff" stroke-width="3" filter="url(#neonBlur)" />
+    <circle cx="441" cy="256" r="5" fill="#ffffff" />
+  </g>
+
+  <!-- Orbiting Node 2 (Blue Satellite) -->
+  <g transform="rotate(145 256 256)">
+    <circle cx="441" cy="256" r="18" fill="#6366f1" fill-opacity="0.4" filter="url(#deepGlow)" />
+    <circle cx="441" cy="256" r="10" fill="#818cf8" stroke="#ffffff" stroke-width="2.5" />
+  </g>
+
+  <!-- Inner Orbit Glow & Ring -->
+  <circle cx="256" cy="256" r="118" fill="none" stroke="#a855f7" stroke-width="10" stroke-opacity="0.25" filter="url(#deepGlow)" />
+  <circle cx="256" cy="256" r="118" fill="none" stroke="url(#innerOrbitGrad)" stroke-width="6" />
+
+  <!-- Inner Node (Amber Speed Booster) -->
+  <g transform="rotate(70 256 256)">
+    <circle cx="374" cy="256" r="22" fill="#f59e0b" fill-opacity="0.4" filter="url(#deepGlow)" />
+    <circle cx="374" cy="256" r="12" fill="#fbbf24" stroke="#ffffff" stroke-width="2.5" filter="url(#neonBlur)" />
+    <circle cx="374" cy="256" r="4" fill="#ffffff" />
+  </g>
+
+  <!-- Central Reticle Crosshairs (Radar Ticks) -->
+  <line x1="256" y1="184" x2="256" y2="164" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+  <line x1="256" y1="328" x2="256" y2="348" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+  <line x1="184" y1="256" x2="164" y2="256" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+  <line x1="328" y1="256" x2="348" y2="256" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+
+  <!-- Central Laser Diamond Core -->
+  <g filter="url(#neonBlur)">
+    <polygon points="256,204 308,256 256,308 204,256" fill="#0f172a" stroke="#38bdf8" stroke-width="4.5" />
+    <polygon points="256,218 294,256 256,294 218,256" fill="#0369a1" fill-opacity="0.4" />
+  </g>
+
+  <!-- Reticle Precision Dot -->
+  <circle cx="256" cy="256" r="10" fill="#ffffff" filter="url(#neonBlur)" />
+  <circle cx="256" cy="256" r="5" fill="#06b6d4" />
+</svg>
