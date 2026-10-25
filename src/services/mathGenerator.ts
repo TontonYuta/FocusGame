@@ -18,8 +18,8 @@ export const MATH_LEVELS_META: MathDifficultyMeta[] = [
 ];
 
 /**
- * Generates fast, clear, mental-math arithmetic problems calibrated for FocusGame.
- * Strictly outputs positive integers that render clearly on mobile screens.
+ * Generates fast, clear, single-line mental-math arithmetic problems calibrated for FocusGame.
+ * Strictly outputs positive integers formatted compactly to prevent line-wrapping on mobile.
  */
 export function generateMathProblem(levelNum: number, previousAnswer?: number): MathProblem {
   // If chained math is requested with an existing answer
@@ -46,7 +46,7 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
 
   switch (lvl) {
     // -------------------------------------------------------------------------
-    // CẤP ĐỘ 1: DỄ - Cộng trừ trực quan, nhanh trong phạm vi 1-50
+    // CẤP ĐỘ 1: DỄ - Cộng trừ trực quan, nhanh trong phạm vi 1-50 (độ dài 5-9 ký tự)
     // -------------------------------------------------------------------------
     case 1: {
       const type = Math.floor(Math.random() * 4);
@@ -81,7 +81,7 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
     }
 
     // -------------------------------------------------------------------------
-    // CẤP ĐỘ 2: TRUNG BÌNH - Nhân chia cửu chương & phối hợp ngoặc trong 1-80
+    // CẤP ĐỘ 2: TRUNG BÌNH - Bảng cửu chương & phối hợp ngoặc gọn (độ dài 5-10 ký tự)
     // -------------------------------------------------------------------------
     case 2: {
       const type = Math.floor(Math.random() * 4);
@@ -92,19 +92,19 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
         expr = `${a} × ${b}`;
         ans = a * b;
       } else if (type === 1) {
-        // (a × b) + c
+        // (a×b) + c
         const a = Math.floor(Math.random() * 5) + 3; // 3..7
         const b = Math.floor(Math.random() * 6) + 3; // 3..8
         const c = Math.floor(Math.random() * 12) + 3; // 3..14
-        expr = `(${a} × ${b}) + ${c}`;
+        expr = `(${a}×${b}) + ${c}`;
         ans = a * b + c;
       } else if (type === 2) {
-        // (a × b) - c
+        // (a×b) - c
         const a = Math.floor(Math.random() * 5) + 4; // 4..8
         const b = Math.floor(Math.random() * 5) + 4; // 4..8
         const prod = a * b;
         const c = Math.floor(Math.random() * (prod - 8)) + 3;
-        expr = `(${a} × ${b}) - ${c}`;
+        expr = `(${a}×${b}) - ${c}`;
         ans = prod - c;
       } else {
         // Phép chia hết + offset
@@ -112,46 +112,54 @@ export function generateMathProblem(levelNum: number, previousAnswer?: number): 
         const quotient = Math.floor(Math.random() * 6) + 3; // 3..8
         const dividend = divisor * quotient;
         const offset = Math.floor(Math.random() * 9) + 2; // 2..10
-        expr = `(${dividend} ÷ ${divisor}) + ${offset}`;
+        expr = `(${dividend}÷${divisor}) + ${offset}`;
         ans = quotient + offset;
       }
       break;
     }
 
     // -------------------------------------------------------------------------
-    // CẤP ĐỘ 3: KHÓ - Tìm ẩn số x/?, 2 bước tính toán, chia dư/modulo
+    // CẤP ĐỘ 3: KHÓ - Tìm ẩn số x/?, 2 bước tính toán, chia dư/modulo (độ dài 9-11 ký tự)
     // -------------------------------------------------------------------------
     case 3:
     default: {
       const type = Math.floor(Math.random() * 4);
       if (type === 0) {
-        // Tìm ẩn số dạng: ? + b = c  (ẩn số là ans)
+        // Tìm ẩn số dạng: ? + b = c (ẩn số là ans)
         const b = Math.floor(Math.random() * 20) + 12; // 12..31
         ans = Math.floor(Math.random() * 22) + 10;     // 10..31
         const c = ans + b;
         expr = `? + ${b} = ${c}`;
       } else if (type === 1) {
-        // Tìm ẩn số dạng: x - b = c  (ẩn số x là ans)
+        // Tìm ẩn số dạng: x - b = c (ẩn số x là ans)
         const b = Math.floor(Math.random() * 18) + 8; // 8..25
         const c = Math.floor(Math.random() * 25) + 10; // 10..34
         ans = b + c;
         expr = `x - ${b} = ${c}`;
       } else if (type === 2) {
-        // Biểu thức hỗn hợp: (a × b) - (c × d)
-        const a = Math.floor(Math.random() * 6) + 5; // 5..10
-        const b = Math.floor(Math.random() * 6) + 5; // 5..10
-        const c = Math.floor(Math.random() * 4) + 2; // 2..5
-        const d = Math.floor(Math.random() * 4) + 2; // 2..5
-        expr = `(${a} × ${b}) - (${c} × ${d})`;
-        ans = (a * b) - (c * d);
+        // Biểu thức hỗn hợp 2 bước gọn: (a×b) - c hoặc a×b - c×d
+        if (Math.random() > 0.5) {
+          const a = Math.floor(Math.random() * 5) + 6; // 6..10
+          const b = Math.floor(Math.random() * 5) + 6; // 6..10
+          const c = Math.floor(Math.random() * 3) + 2; // 2..4
+          const d = Math.floor(Math.random() * 3) + 2; // 2..4
+          expr = `${a}×${b} - ${c}×${d}`;
+          ans = (a * b) - (c * d);
+        } else {
+          const a = Math.floor(Math.random() * 4) + 9; // 9..12
+          const b = Math.floor(Math.random() * 4) + 4; // 4..7
+          const c = Math.floor(Math.random() * 15) + 8; // 8..22
+          expr = `(${a}×${b}) - ${c}`;
+          ans = (a * b) - c;
+        }
       } else {
-        // Phép chia lấy dư modulo + offset: (num % div) + c
+        // Phép chia lấy dư modulo + offset: (num%div) + c
         const div = Math.floor(Math.random() * 4) + 5; // 5..8
         const rem = Math.floor(Math.random() * (div - 2)) + 2; // 2..div-1
         const mul = Math.floor(Math.random() * 5) + 3;
         const num = mul * div + rem;
         const offset = Math.floor(Math.random() * 15) + 10;
-        expr = `(${num} % ${div}) + ${offset}`;
+        expr = `(${num}%${div}) + ${offset}`;
         ans = rem + offset;
       }
       break;

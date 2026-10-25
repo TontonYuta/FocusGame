@@ -62,12 +62,29 @@ export function updateArenaHud(
     if (hubMath && math) {
       hubMath.innerText = math.expression;
       const exprLen = math.expression.length;
-      const sizeClass = exprLen >= 15
-        ? 'text-xs sm:text-sm md:text-base'
-        : exprLen >= 10
-          ? 'text-sm sm:text-lg md:text-xl'
-          : 'text-base sm:text-2xl md:text-3xl';
-      hubMath.className = `font-mono ${sizeClass} font-black text-amber-300 tracking-tight leading-snug text-center px-1 break-words select-none`;
+      const sizeClass = exprLen >= 11
+        ? 'text-xs sm:text-base md:text-xl'
+        : exprLen >= 9
+          ? 'text-sm sm:text-xl md:text-2xl'
+          : exprLen >= 7
+            ? 'text-base sm:text-2xl md:text-3xl'
+            : 'text-lg sm:text-3xl md:text-4xl';
+
+      // Enforce single-line nowrap, zero line-breaking
+      hubMath.className = `font-mono ${sizeClass} font-black text-amber-300 tracking-tight leading-none text-center whitespace-nowrap select-none inline-block max-w-full`;
+
+      // Auto-fit micro-scaler: if rendered text exceeds parent boundary, scale proportionally on GPU
+      hubMath.style.transform = 'none';
+      const parentWidth = (hubMath.parentElement?.clientWidth || 80) - 6;
+      const textWidth = hubMath.scrollWidth;
+      if (textWidth > parentWidth && parentWidth > 0) {
+        const scale = Math.max(0.65, Math.min(1.0, parentWidth / textWidth));
+        hubMath.style.transform = `scale(${scale})`;
+        hubMath.style.transformOrigin = 'center center';
+      } else {
+        hubMath.style.transform = 'none';
+      }
+
       hubMath.classList.remove('hidden');
     }
     if (hubVocab) hubVocab.classList.add('hidden');
@@ -76,7 +93,7 @@ export function updateArenaHud(
       hubVocab.innerText = vocab.vi;
       const viLen = vocab.vi.length;
       const viSizeClass = viLen >= 14 ? 'text-xs sm:text-sm md:text-base' : viLen >= 9 ? 'text-xs sm:text-base md:text-lg' : 'text-sm sm:text-lg md:text-xl';
-      hubVocab.className = `font-patrick ${viSizeClass} font-bold text-cyan-300 leading-tight text-center px-1 break-words`;
+      hubVocab.className = `font-patrick ${viSizeClass} font-bold text-cyan-300 leading-tight text-center px-1 break-words select-none`;
       hubVocab.classList.remove('hidden');
     }
     if (hubMath) hubMath.classList.add('hidden');
@@ -84,7 +101,8 @@ export function updateArenaHud(
     // Schulte
     if (hubMath) {
       hubMath.innerText = String(schulteTarget);
-      hubMath.className = 'font-mono text-2xl sm:text-4xl md:text-5xl font-black text-white leading-none text-center';
+      hubMath.style.transform = 'none';
+      hubMath.className = 'font-mono text-2xl sm:text-4xl md:text-5xl font-black text-white leading-none text-center whitespace-nowrap select-none';
       hubMath.classList.remove('hidden');
     }
     if (hubVocab) hubVocab.classList.add('hidden');
