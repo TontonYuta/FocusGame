@@ -47,26 +47,30 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
 
-      - name: Prepare Release Asset
+      - name: Prepare Release Assets
         run: |
+          TAG_NAME="${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.2.0' }}"
           mkdir -p release-apk
-          cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/FocusGame-v1.0.0.apk
-          ls -lh release-apk/FocusGame-v1.0.0.apk
+          # 1. Copy Android APK with dynamic tag version
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/FocusGame-${TAG_NAME}.apk
+          # 2. Package lightweight Web Bundle for direct in-app Live OTA updates
+          cd dist && zip -r ../release-apk/focusgame-web-bundle.zip . && cd ..
+          ls -lh release-apk/
 
-      - name: Upload Build Artifact
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: FocusGame-v1.0.0.apk
-          path: release-apk/FocusGame-v1.0.0.apk
+          name: FocusGame-Release-${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.2.0' }}
+          path: release-apk/*
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
-          name: FocusGame v1.0.0 (Android APK)
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.2.0' }}
+          name: FocusGame ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.2.0' }}
           draft: false
           prerelease: false
-          files: release-apk/FocusGame-v1.0.0.apk
+          files: release-apk/*
           body: |
             ## 🎮 FocusGame - Vòng Xoáy Tinh Anh (Phiên bản Android APK)
 
