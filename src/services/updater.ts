@@ -14,7 +14,7 @@ export interface ReleaseInfo {
   currentVersion: string;
 }
 
-export const CURRENT_APP_VERSION = 'v1.2.0';
+export const CURRENT_APP_VERSION = 'v1.3.0';
 
 export async function checkAppUpdate(): Promise<ReleaseInfo> {
   const repo = 'TontonYuta/FocusGame';
