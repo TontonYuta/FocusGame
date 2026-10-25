@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FocusGame</string>
+    <string name="title_activity_main">FocusGame</string>
+    <string name="package_name">com.tontonyuta.focusgame</string>
+    <string name="custom_url_scheme">com.tontonyuta.focusgame</string>
+</resources>

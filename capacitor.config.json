@@ -1,0 +1,10 @@
+{
+  "appId": "com.tontonyuta.focusgame",
+  "appName": "FocusGame",
+  "webDir": "dist",
+  "android": {
+    "buildOptions": {
+      "releaseType": "APK"
+    }
+  }
+}

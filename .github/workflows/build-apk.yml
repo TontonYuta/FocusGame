@@ -1,0 +1,90 @@
+name: Build & Release Android APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Build Web Assets & Sync Capacitor
+        run: |
+          npm run build
+          npx cap sync android
+
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Prepare Release Asset
+        run: |
+          mkdir -p release-apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/FocusGame-v1.0.0.apk
+          ls -lh release-apk/FocusGame-v1.0.0.apk
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FocusGame-v1.0.0.apk
+          path: release-apk/FocusGame-v1.0.0.apk
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'v1.0.0' }}
+          name: FocusGame v1.0.0 (Android APK)
+          draft: false
+          prerelease: false
+          files: release-apk/FocusGame-v1.0.0.apk
+          body: |
+            ## 🎮 FocusGame - Vòng Xoáy Tinh Anh (Phiên bản Android APK)
+
+            Tệp cài đặt chính thức cho các thiết bị điện thoại / máy tính bảng Android (**FocusGame-v1.0.0.apk**).
+
+            ### ✨ Các tính năng nổi bật:
+            - 🎯 **Rèn luyện nhận thức 4-trong-1**: Tinh mắt, Tính nhẩm thần tốc, Phản xạ từ vựng CEFR A1-C1 và Thao tác ngón tay.
+            - 🔥 **Chế độ Sinh Tồn (Endless Survival)**: Thử thách áp lực thời gian động (+2s khi đúng, -4s khi sai), tốc độ tăng dần theo combo.
+            - 📳 **Phản hồi xúc giác (Haptic Feedback)**: Rung phản hồi thực tế khi chạm đúng, lên combo hoặc nổ bom.
+            - 🎨 **Giao diện công thái học di động**: Bố cục quỹ đạo đồng tâm thông minh, đạt chuẩn 60 FPS mượt mà.
+            - 🔊 **Âm thanh & Phát âm chuẩn**: Web Audio Synthesizer & Web Speech TTS tiếng Anh chuẩn ngữ bản ngữ không cần tải thêm asset ngoài.
+
+            ### 📲 Hướng dẫn cài đặt trên điện thoại:
+            1. Bấm tải tệp **`FocusGame-v1.0.0.apk`** bên dưới về điện thoại Android.
+            2. Nhấp vào tệp tải về để tiến hành cài đặt (chọn *"Cho phép từ nguồn này"* / *"Vẫn cài đặt"* nếu hệ điều hành hiển thị cảnh báo).
+            3. Mở ứng dụng **FocusGame** và bắt đầu tập luyện!
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
