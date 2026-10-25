@@ -22,7 +22,9 @@ export function updateArenaHud(
   const legendBomb = document.getElementById('legendBomb');
 
   if (hudLevelTitle) hudLevelTitle.innerText = config.name;
-  if (hudTargetCount) hudTargetCount.innerText = `${data.targetsDone}/${data.targetTotal}`;
+  if (hudTargetCount) {
+    hudTargetCount.innerText = config.mode === 'survival' ? `${data.targetsDone} 🔥` : `${data.targetsDone}/${data.targetTotal}`;
+  }
   if (hudAccuracy) hudAccuracy.innerText = `${data.accuracy}%`;
 
   if (hudComboValue) hudComboValue.innerText = `x${data.combo}`;

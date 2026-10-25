@@ -11,14 +11,20 @@ export function buildMatchStats(
   reactions: number[],
   wordsSeen: Map<string, { vocab: VocabItem; wasWrong: boolean }>
 ): MatchStats {
-  const spent = config.timeLimitSec - timeLeft;
+  const isSurvival = config.mode === 'survival';
+  const spent = isSurvival
+    ? Math.max(1, Math.round(reactions.length > 0 ? reactions.reduce((a, b) => a + b, 0) / 1000 : config.timeLimitSec))
+    : Math.max(1, config.timeLimitSec - timeLeft);
+
   const acc = hits.total > 0 ? Math.round((hits.correct / hits.total) * 100) : 0;
   const avgRx = reactions.length > 0
     ? Math.round(reactions.reduce((a, b) => a + b, 0) / reactions.length)
     : 1200;
 
   const stars = isWin
-    ? (acc >= 90 && timeLeft >= config.timeLimitSec * 0.25 ? 3 : acc >= 75 ? 2 : 1)
+    ? (isSurvival
+        ? (hits.correct >= 20 ? 3 : hits.correct >= 10 ? 2 : 1)
+        : (acc >= 90 && timeLeft >= config.timeLimitSec * 0.25 ? 3 : acc >= 75 ? 2 : 1))
     : 0;
 
   if (isWin) {

@@ -20,7 +20,18 @@ class SoundService {
     }
   }
 
+  public vibrate(pattern: number | number[]) {
+    try {
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate(pattern);
+      }
+    } catch {
+      // Ignore if device or browser does not support haptics
+    }
+  }
+
   public playCorrect() {
+    this.vibrate(18);
     if (!this.isSoundEnabled) return;
     this.initContext();
     if (!this.ctx) return;
@@ -49,6 +60,7 @@ class SoundService {
   }
 
   public playWrong() {
+    this.vibrate([40, 50, 40]);
     if (!this.isSoundEnabled) return;
     this.initContext();
     if (!this.ctx) return;
@@ -72,6 +84,7 @@ class SoundService {
   }
 
   public playComboUp(combo: number) {
+    this.vibrate(28);
     if (!this.isSoundEnabled) return;
     this.initContext();
     if (!this.ctx) return;
@@ -97,6 +110,7 @@ class SoundService {
   }
 
   public playBomb() {
+    this.vibrate([80, 50, 80, 50, 120]);
     if (!this.isSoundEnabled) return;
     this.initContext();
     if (!this.ctx) return;

@@ -5,7 +5,8 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
     math: 'Toán',
     vocab: 'Tiếng Anh',
     combined: 'Kết Hợp',
-    schulte: 'Schulte'
+    schulte: 'Schulte',
+    survival: 'Sinh Tồn'
   };
 
   const diffLabels: Record<Difficulty, string> = {
@@ -15,6 +16,28 @@ export function getGameConfig(mode: GameMode, difficulty: Difficulty): GameConfi
   };
 
   const name = `${modeLabels[mode]} - ${diffLabels[difficulty]}`;
+
+  if (mode === 'survival') {
+    const ringCount = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 2 : 3;
+    const nodeCounts = { easy: 10, medium: 16, hard: 22 };
+    return {
+      id: 99,
+      mode,
+      difficulty,
+      name,
+      subtitle: 'Bắt đầu 25s · Đúng +2s · Sai -4s · Tốc độ tăng dần',
+      rings: ringCount,
+      nodeCount: nodeCounts[difficulty],
+      targetCount: 999,
+      timeLimitSec: 25,
+      baseSpeed: difficulty === 'easy' ? 0.0035 : difficulty === 'medium' ? 0.0045 : 0.0055,
+      cefrLevel: difficulty === 'easy' ? 'A1' : difficulty === 'medium' ? 'A2' : 'B2',
+      allowBomb: difficulty !== 'easy',
+      hasReversal: difficulty !== 'easy',
+      hasSinusoidalSpeed: difficulty === 'hard',
+      isChainedMath: difficulty === 'hard'
+    };
+  }
 
   if (difficulty === 'easy') {
     return {
@@ -86,7 +109,8 @@ export function createCustomGameConfig(p: CustomGameParams): GameConfig {
     math: 'Toán',
     vocab: `Tiếng Anh (${p.cefrLevel.toUpperCase()})`,
     combined: 'Kết Hợp',
-    schulte: 'Schulte'
+    schulte: 'Schulte',
+    survival: 'Sinh Tồn'
   };
 
   return {

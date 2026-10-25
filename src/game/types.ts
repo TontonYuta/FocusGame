@@ -1,6 +1,6 @@
 import { VocabItem, CEFRLevel } from '../data/vocabulary';
 
-export type GameMode = 'math' | 'vocab' | 'combined' | 'schulte';
+export type GameMode = 'math' | 'vocab' | 'combined' | 'schulte' | 'survival';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type GestureType = 'tap' | 'bomb';
 export type SpeedPreset = 'slow' | 'normal' | 'fast' | 'wave';

@@ -37,7 +37,15 @@ export function showMatchResults(stats: MatchStats) {
   const statRx = document.getElementById('statAvgReflex');
 
   if (titleEl) titleEl.innerText = stats.isWin ? 'HOÀN THÀNH!' : 'CHƯA ĐẠT';
-  if (subEl) subEl.innerText = stats.isWin ? `Đã hoàn thành ${stats.levelName}` : 'Thời gian đã hết hoặc chạm bom. Hãy thử lại!';
+  if (subEl) {
+    if (stats.levelName.includes('Sinh Tồn')) {
+      subEl.innerText = stats.isWin
+        ? `Sống sót thành công! Đạt ${stats.score} điểm`
+        : 'Hết thời gian sinh tồn! Hãy thử lại để lập kỷ lục mới.';
+    } else {
+      subEl.innerText = stats.isWin ? `Đã hoàn thành ${stats.levelName}` : 'Thời gian đã hết hoặc chạm bom. Hãy thử lại!';
+    }
+  }
 
   if (statScore) statScore.innerText = String(stats.score);
   if (statTime) statTime.innerText = `${stats.timeSpentSec}s`;

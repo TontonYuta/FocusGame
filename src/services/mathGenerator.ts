@@ -4,6 +4,22 @@ export interface MathProblem {
 }
 
 export function generateMathProblem(levelNum: number, previousAnswer?: number): MathProblem {
+  // If chained math is requested with an existing answer
+  if (previousAnswer && previousAnswer > 0) {
+    const op = Math.random() > 0.4 ? '+' : '-';
+    if (op === '+') {
+      const delta = Math.floor(Math.random() * 12) + 3;
+      return { expression: `${previousAnswer} + ${delta}`, result: previousAnswer + delta };
+    } else {
+      const delta = Math.min(Math.max(1, previousAnswer - 2), Math.floor(Math.random() * 10) + 2);
+      const res = previousAnswer - delta;
+      if (res > 0) {
+        return { expression: `${previousAnswer} - ${delta}`, result: res };
+      }
+      return { expression: `${previousAnswer} + 5`, result: previousAnswer + 5 };
+    }
+  }
+
   let expr = '';
   let ans = 0;
 

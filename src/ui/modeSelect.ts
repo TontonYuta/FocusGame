@@ -39,7 +39,10 @@ export function initModeSelect(callbacks: ModeSelectCallbacks) {
     modeButtons.forEach(btn => {
       const m = btn.dataset.mode as GameMode;
       if (m === mode) {
-        btn.className = 'btn-mode-card selected flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-cyan-950/50 border-cyan-500 shadow-md glow-cyan cursor-pointer';
+        const activeClass = mode === 'survival'
+          ? 'bg-rose-950/50 border-rose-500 shadow-md glow-red'
+          : 'bg-cyan-950/50 border-cyan-500 shadow-md glow-cyan';
+        btn.className = `btn-mode-card selected flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 ${activeClass} cursor-pointer`;
       } else {
         btn.className = 'btn-mode-card flex flex-col items-center justify-center p-3 sm:p-3.5 rounded-2xl border-2 transition active:scale-95 bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer';
       }

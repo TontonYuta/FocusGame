@@ -12,7 +12,7 @@ export * from './types';
 export * from './config';
 
 export class GameEngine {
-  private arena: HTMLElement;
+  public arena: HTMLElement;
   private nodesContainer: HTMLElement;
   private hub: HTMLElement;
   private onHud: (d: HudData) => void;
@@ -131,7 +131,7 @@ export class GameEngine {
       if (!this.isRunning || this.isPaused) return;
       this.timeLeft -= 1;
       if (this.timeLeft <= 5 && this.timeLeft > 0) audio.playTick();
-      if (this.timeLeft <= 0) this.stopAndEnd(false);
+      if (this.timeLeft <= 0) this.stopAndEnd(this.config.mode === 'survival' ? this.targetsDone >= 5 : false);
       this.updateHud();
     }, 1000);
 
@@ -164,7 +164,8 @@ export class GameEngine {
       this.lastFrameMs = timestamp;
       const dtScale = dt / 16.6667;
       const factor = this.config.hasSinusoidalSpeed ? 1.0 + 0.5 * Math.sin(this.frameCount * 0.02) : 1.0;
-      updateNodePositions(this.nodes, this.cachedRadii, this.cachedCenterX, this.cachedCenterY, this.ringDirs, this.config.baseSpeed, factor, dtScale);
+      const survivalSpeedMult = this.config.mode === 'survival' ? Math.min(2.0, 1.0 + (this.targetsDone * 0.035)) : 1.0;
+      updateNodePositions(this.nodes, this.cachedRadii, this.cachedCenterX, this.cachedCenterY, this.ringDirs, this.config.baseSpeed, factor * survivalSpeedMult, dtScale);
     }
     this.frameId = requestAnimationFrame(this.loop);
   };
